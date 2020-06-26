@@ -1,0 +1,14 @@
+﻿<Window x:Class="NatashaPad.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NatashaPad"
+        mc:Ignorable="d"
+        Title="NatashaPad" Height="544" Width="800">
+    <Grid>
+        <TextBox Name="txtInput" HorizontalAlignment="Left" Margin="33,38,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="721" Height="307" />
+        <TextBox Name="txtOutput" HorizontalAlignment="Left" VerticalAlignment="Top" Width="720" Height="141" Margin="33,364,0,0" TextWrapping="Wrap" />
+        <Button Name="BtnRun" Click="BtnRun_OnClick" Content="Run" HorizontalAlignment="Left" Margin="33,10,0,0" VerticalAlignment="Top" Width="62" />
+    </Grid>
+</Window>
