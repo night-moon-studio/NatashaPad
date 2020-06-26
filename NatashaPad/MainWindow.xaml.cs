@@ -12,6 +12,8 @@ namespace NatashaPad
         private readonly INScriptEngine _scriptEngine;
         private readonly DumperResolver _dumperResolver;
 
+        private readonly NScriptOptions _scriptOptions = new NScriptOptions();
+
         public MainWindow(DumperResolver dumperResolver)
         {
             _scriptEngine = new CSharpScriptEngine();
@@ -59,12 +61,12 @@ namespace NatashaPad
                 if (input.EndsWith(";"))
                 {
                     // statements, execute
-                    await _scriptEngine.Execute(input, new NScriptOptions());
+                    await _scriptEngine.Execute(input, _scriptOptions);
                 }
                 else
                 {
                     // expression, eval
-                    var result = await _scriptEngine.Eval(txtInput.Text, new NScriptOptions());
+                    var result = await _scriptEngine.Eval(txtInput.Text, _scriptOptions);
 
                     if (null == result)
                     {

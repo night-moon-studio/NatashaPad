@@ -123,6 +123,7 @@ public static void Main() => MainAsync(null).Wait();
                     {
                         typeof(object).Assembly,
                         typeof(Enumerable).Assembly,
+                        typeof(IDumper).Assembly,
                         Assembly.Load("netstandard"),
                         Assembly.Load("System.Runtime"),
                     }
