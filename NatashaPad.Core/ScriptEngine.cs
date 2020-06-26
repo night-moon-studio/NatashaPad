@@ -24,11 +24,8 @@ namespace NatashaPad
 
     public class CSharpScriptEngine : INScriptEngine
     {
-        private readonly Action<string> _outputHelper;
-
-        public CSharpScriptEngine(Action<string> outputAction)
+        public CSharpScriptEngine()
         {
-            _outputHelper = outputAction;
         }
 
         public async Task Execute(string code, NScriptOptions scriptOptions)
@@ -44,25 +41,34 @@ namespace NatashaPad
                 {
                     //async
                     code = $@"public static async Task MainAsync()
-{{
-  {code}
-}}";
+  {{
+    {code}
+  }}";
                 }
                 else
                 {
                     // sync
                     code = $@"public static void Main(string[] args)
-{{
-  {code}
-}}";
+  {{
+    {code}
+  }}";
                 }
             }
 
             if (!code.Contains("static void Main(") && code.Contains("static async Task Main("))
             {
-                code = $@"{code}
+                if (code.Contains("static async Task Main()"))
+                {
+                    code = $@"{code}
 public static void Main() => MainAsync().Wait();
 ";
+                }
+                else
+                {
+                    code = $@"{code}
+public static void Main() => MainAsync(null).Wait();
+";
+                }
             }
 
             if (!code.Contains("class Program"))
@@ -93,10 +99,14 @@ public static void Main() => MainAsync().Wait();
             var assembly = assBuilder.GetAssembly();
             var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
-            var entryPoint = assembly.GetType("Program")?.GetMethod("Main");
+            var entryPoint = assembly.GetType("Program")?.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (null != entryPoint)
             {
-                entryPoint.Invoke(null, Array.Empty<object>());
+                entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
+            }
+            else
+            {
+                throw new ArgumentException("can not find entry point");
             }
 
             //using (var executor = new DotNetExecutor(assembly.Location, _outputHelper))

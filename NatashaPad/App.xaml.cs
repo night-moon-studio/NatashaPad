@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Windows;
+using WeihanLi.Common;
 
 namespace NatashaPad
 {
@@ -27,6 +28,7 @@ namespace NatashaPad
         {
             IServiceCollection services = new ServiceCollection();
             ConfigureServices(services);
+            DependencyResolver.SetDependencyResolver(services);
 
             services.BuildServiceProvider()
                 .GetRequiredService<MainWindow>()

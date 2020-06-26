@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="NatashaPad" Height="544" Width="800">
     <Grid>
-        <TextBox Name="txtInput" HorizontalAlignment="Left" Margin="33,38,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="721" Height="307" />
-        <TextBox Name="txtOutput" HorizontalAlignment="Left" VerticalAlignment="Top" Width="720" Height="141" Margin="33,364,0,0" TextWrapping="Wrap" />
-        <Button Name="BtnRun" Click="BtnRun_OnClick" Content="Run" HorizontalAlignment="Left" Margin="33,10,0,0" VerticalAlignment="Top" Width="62" />
+        <Button Name="BtnRun" Click="BtnRun_OnClick" Content="Run" HorizontalAlignment="Left" Margin="20,10,0,0" VerticalAlignment="Top" Width="62" />
+        <TextBox Name="txtInput" VerticalContentAlignment="Top" Margin="10,40,10,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="307" />
+        <TextBox Name="txtOutput" VerticalContentAlignment="Top" VerticalAlignment="Top" Height="141" Margin="10,356,10,0" TextWrapping="Wrap" />
     </Grid>
 </Window>

@@ -38,8 +38,7 @@ namespace NatashaPad
                     .Resolve(obj.GetType())
                     .Dump(obj);
             }
-            DependencyResolver.ResolveService<IOutputHelper>()
-                ?.Output(dumpedResult);
+            DumpOutHelper.OutputAction?.Invoke(dumpedResult);
         }
     }
 }

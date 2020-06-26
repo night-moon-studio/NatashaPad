@@ -11,11 +11,12 @@ namespace NatashaPad
     {
         private readonly INScriptEngine _scriptEngine;
         private readonly DumperResolver _dumperResolver;
-        private readonly object _outputLock = new object();
 
         public MainWindow(DumperResolver dumperResolver)
         {
-            _scriptEngine = new CSharpScriptEngine((str) =>
+            _scriptEngine = new CSharpScriptEngine();
+
+            DumpOutHelper.OutputAction += str =>
             {
                 if (str is null)
                     return;
@@ -36,7 +37,8 @@ namespace NatashaPad
                             txtOutput.AppendText(Environment.NewLine);
                         }));
                 }
-            });
+            };
+
             _dumperResolver = dumperResolver;
             InitializeComponent();
             txtInput.Text = "\"Hello NatashaPad\"";
