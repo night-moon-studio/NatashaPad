@@ -1,4 +1,5 @@
 ﻿using System;
+using WeihanLi.Common;
 using WeihanLi.Extensions;
 
 namespace NatashaPad
@@ -12,11 +13,33 @@ namespace NatashaPad
 
     public class DefaultDumper : IDumper
     {
+        public static readonly IDumper Instance = new DefaultDumper();
+
         public Func<Type, bool> TypePredicate { get; } = t => true;
 
         public string Dump(object obj)
         {
             return obj.ToJsonOrString();
+        }
+    }
+
+    public static class DumperExtensions
+    {
+        public static void Dump(this object obj)
+        {
+            string dumpedResult;
+            if (obj is null)
+            {
+                dumpedResult = "(null)";
+            }
+            else
+            {
+                dumpedResult = DependencyResolver.ResolveService<DumperResolver>()
+                    .Resolve(obj.GetType())
+                    .Dump(obj);
+            }
+            DependencyResolver.ResolveService<IOutputHelper>()
+                ?.Output(dumpedResult);
         }
     }
 }

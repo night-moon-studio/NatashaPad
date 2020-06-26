@@ -21,7 +21,7 @@ namespace NatashaPad
                     return dumper;
             }
 
-            return null;
+            return DefaultDumper.Instance;
         }
     }
 }

@@ -19,29 +19,27 @@ namespace NatashaPad
             {
                 if (str is null)
                     return;
-                lock (_outputLock)
+
+                //https://stackoverflow.com/questions/1644079/change-wpf-controls-from-a-non-main-thread-using-dispatcher-invoke
+                if (Application.Current.Dispatcher.CheckAccess())
                 {
-                    //https://stackoverflow.com/questions/1644079/change-wpf-controls-from-a-non-main-thread-using-dispatcher-invoke
-                    if (Application.Current.Dispatcher.CheckAccess())
-                    {
-                        txtOutput.AppendText(str);
-                        txtOutput.AppendText(Environment.NewLine);
-                    }
-                    else
-                    {
-                        Application.Current.Dispatcher.BeginInvoke(
-                            DispatcherPriority.Background,
-                            new Action(() =>
-                            {
-                                txtOutput.AppendText(str);
-                                txtOutput.AppendText(Environment.NewLine);
-                            }));
-                    }
+                    txtOutput.AppendText(str);
+                    txtOutput.AppendText(Environment.NewLine);
+                }
+                else
+                {
+                    Application.Current.Dispatcher.BeginInvoke(
+                        DispatcherPriority.Background,
+                        new Action(() =>
+                        {
+                            txtOutput.AppendText(str);
+                            txtOutput.AppendText(Environment.NewLine);
+                        }));
                 }
             });
             _dumperResolver = dumperResolver;
             InitializeComponent();
-            txtInput.Text = "Console.WriteLine(\"Hello NatashaPad\");";
+            txtInput.Text = "\"Hello NatashaPad\"";
             txtOutput.AppendText("Output");
         }
 

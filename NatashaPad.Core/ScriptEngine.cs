@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Natasha;
@@ -42,7 +43,7 @@ namespace NatashaPad
                 if (code.Contains("await "))
                 {
                     //async
-                    code = $@"public static async Task MainAsync(string[] args)
+                    code = $@"public static async Task MainAsync()
 {{
   {code}
 }}";
@@ -55,6 +56,13 @@ namespace NatashaPad
   {code}
 }}";
                 }
+            }
+
+            if (!code.Contains("static void Main(") && code.Contains("static async Task Main("))
+            {
+                code = $@"{code}
+public static void Main() => MainAsync().Wait();
+";
             }
 
             if (!code.Contains("class Program"))
@@ -84,16 +92,39 @@ namespace NatashaPad
 
             var assembly = assBuilder.GetAssembly();
             var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
-            using (var executor = new DotNetExecutor(assembly.Location, _outputHelper))
+
+            var entryPoint = assembly.GetType("Program")?.GetMethod("Main");
+            if (null != entryPoint)
             {
-                await executor.ExecuteAsync();
+                entryPoint.Invoke(null, Array.Empty<object>());
             }
+
+            //using (var executor = new DotNetExecutor(assembly.Location, _outputHelper))
+            //{
+            //    await executor.ExecuteAsync();
+            //}
         }
 
         public async Task<object> Eval(string code, NScriptOptions scriptOptions)
         {
+            // https://github.com/dotnet/roslyn/issues/34111
+            var defaultReferences =
+                new[]
+                    {
+                        typeof(object).Assembly,
+                        typeof(Enumerable).Assembly,
+                        Assembly.Load("netstandard"),
+                        Assembly.Load("System.Runtime"),
+                    }
+                    .Select(assembly => assembly.Location)
+                    .Distinct()
+                    .Select(l => MetadataReference.CreateFromFile(l))
+                    .Cast<MetadataReference>()
+                    .ToArray();
+
             var options = ScriptOptions.Default
                 .WithLanguageVersion(LanguageVersion.Latest)
+                .AddReferences(defaultReferences)
                 .WithImports(scriptOptions.UsingList)
                 ;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using WeihanLi.Common.Helpers;
 
 namespace NatashaPad
@@ -12,7 +11,6 @@ namespace NatashaPad
             {
                 OnOutputDataReceived += (sender, args) =>
                 {
-                    Debug.WriteLine(args);
                     outputHandler(args);
                 };
             }
