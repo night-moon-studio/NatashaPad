@@ -8,9 +8,7 @@ using Natasha.Framework;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using WeihanLi.Common;
 using WeihanLi.Extensions;
 
 namespace NatashaPad
@@ -84,20 +82,18 @@ public static void Main() => MainAsync(null).Wait();
                 code = $"{scriptOptions.UsingList.Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
             }
 
-            DomainManagement.RegisterDefault<AssemblyDomain>();
-            var assBuilder = new AssemblyCSharpBuilder(GuidIdGenerator.Instance.NewId());
+            using var domain = DomainManagement.Random;
+            var assBuilder = new AssemblyCSharpBuilder();
 
             assBuilder.Add(code, scriptOptions.UsingList);
 
             // TODO: add references
 
-            assBuilder.CompilerOption(compiler =>
-            {
-                compiler.AssemblyOutputKind = AssemblyBuildKind.File;
-            });
+            assBuilder.Compiler.Domain = domain;
+            assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.File;
 
             var assembly = assBuilder.GetAssembly();
-            var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
+            // var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
             var entryPoint = assembly.GetType("Program")?.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (null != entryPoint)
