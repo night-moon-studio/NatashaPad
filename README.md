@@ -2,6 +2,8 @@
 
 ## Intro
 
+![Build Status](https://github.com/WeihanLi/NatashaPad/workflows/dotnetcore/badge.svg)
+
 Another dotnet debug tool like LinqPad and dotnet fiddle, powered by Roslyn and Natasha
 
 ![Intro](./resources/NatashaPad-Intro.gif)
