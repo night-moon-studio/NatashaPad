@@ -58,7 +58,7 @@ namespace NatashaPad
 
             try
             {
-                if (input.EndsWith(";"))
+                if (input.Contains("static void Main(") || input.EndsWith(";"))
                 {
                     // statements, execute
                     await _scriptEngine.Execute(input, _scriptOptions);
