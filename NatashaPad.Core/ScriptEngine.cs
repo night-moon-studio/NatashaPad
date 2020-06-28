@@ -88,6 +88,7 @@ public static void Main() => MainAsync(null).Wait();
             assBuilder.Add(code, scriptOptions.UsingList);
 
             // TODO: add references
+            await Task.Yield();
 
             assBuilder.Compiler.Domain = domain;
             assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.File;
