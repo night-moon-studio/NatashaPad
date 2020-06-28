@@ -6,7 +6,7 @@ Another dotnet debug tool like LinqPad and dotnet fiddle, powered by Roslyn and 
 
 ![Intro](./resources/NatashaPad-intro.gif)
 
-## Acknowledgment
+## Acknowledgements
 
 - [Roslyn](https://github.com/dotnet/roslyn)
 - [Natasha](https://github.com/dotnetcore/Natasha)
