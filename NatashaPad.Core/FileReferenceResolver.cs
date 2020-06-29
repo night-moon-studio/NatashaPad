@@ -12,10 +12,12 @@ namespace NatashaPad
             _filePath = filePath;
         }
 
-        public Task<MetadataReference> Resolve()
+        public string ReferenceType => "FileReference";
+
+        public Task<PortableExecutableReference[]> Resolve()
         {
             var fileReference = MetadataReference.CreateFromFile(_filePath);
-            return Task.FromResult((MetadataReference)fileReference);
+            return Task.FromResult(new[] { fileReference });
         }
     }
 }

@@ -5,6 +5,8 @@ namespace NatashaPad
 {
     public interface IReferenceResolver
     {
-        Task<MetadataReference> Resolve();
+        string ReferenceType { get; }
+
+        Task<PortableExecutableReference[]> Resolve();
     }
 }

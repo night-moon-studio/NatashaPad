@@ -87,9 +87,23 @@ public static void Main() => MainAsync(null).Wait();
 
             assBuilder.Add(code, scriptOptions.UsingList);
 
-            // TODO: add references
-            await Task.Yield();
-
+            // add reference
+            if (scriptOptions.ReferenceResolvers != null && scriptOptions.ReferenceResolvers.Length > 0)
+            {
+                var references = await scriptOptions.ReferenceResolvers
+                    .Select(r => r.Resolve())
+                    .WhenAll()
+                    .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray());
+                // add reference
+                foreach (var reference in references)
+                {
+                    // TODO: handle none filePath reference
+                    if (!string.IsNullOrEmpty(reference?.FilePath))
+                    {
+                        domain.AddReferencesFromDllFile(reference.FilePath);
+                    }
+                }
+            }
             assBuilder.Compiler.Domain = domain;
             assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.File;
 
@@ -140,7 +154,11 @@ public static void Main() => MainAsync(null).Wait();
                                      ?? Array.Empty<IReferenceResolver>();
             if (referenceResolvers.Length > 0)
             {
-                var references = await referenceResolvers.Select(r => r.Resolve()).WhenAll();
+                var references = await referenceResolvers
+                        .Select(r => r.Resolve())
+                        .WhenAll()
+                        .ContinueWith(r => r.Result.SelectMany(_ => _))
+                    ;
                 options = options.WithReferences(references);
             }
 
