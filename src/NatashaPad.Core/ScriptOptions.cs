@@ -10,9 +10,8 @@ namespace NatashaPad
             "System.Collections.Generic",
             "System.Linq",
             "System.Threading.Tasks",
-            "NatashaPad",
         };
 
-        public IReferenceResolver[] ReferenceResolvers { get; set; }
+        public ICollection<IReferenceResolver> ReferenceResolvers { get; } = new List<IReferenceResolver>();
     }
 }

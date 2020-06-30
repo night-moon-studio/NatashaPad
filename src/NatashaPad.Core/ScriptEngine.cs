@@ -22,10 +22,6 @@ namespace NatashaPad
 
     public class CSharpScriptEngine : INScriptEngine
     {
-        public CSharpScriptEngine()
-        {
-        }
-
         public async Task Execute(string code, NScriptOptions scriptOptions)
         {
             if (code.Contains("static void Main(") || code.Contains("static async Task Main("))
@@ -77,10 +73,9 @@ public static void Main() => MainAsync(null).Wait();
 }}";
             }
 
-            if (scriptOptions.UsingList.Count > 0)
-            {
-                code = $"{scriptOptions.UsingList.Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
-            }
+            scriptOptions.UsingList.Add("NatashaPad");
+
+            code = $"{scriptOptions.UsingList.Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
 
             using var domain = DomainManagement.Random;
             var assBuilder = new AssemblyCSharpBuilder();
@@ -88,7 +83,7 @@ public static void Main() => MainAsync(null).Wait();
             assBuilder.Add(code, scriptOptions.UsingList);
 
             // add reference
-            if (scriptOptions.ReferenceResolvers != null && scriptOptions.ReferenceResolvers.Length > 0)
+            if (scriptOptions.ReferenceResolvers != null && scriptOptions.ReferenceResolvers.Count > 0)
             {
                 var references = await scriptOptions.ReferenceResolvers
                     .Select(r => r.Resolve())
@@ -144,17 +139,16 @@ public static void Main() => MainAsync(null).Wait();
                     .Cast<MetadataReference>()
                     .ToArray();
 
+            scriptOptions.UsingList.Add("NatashaPad");
             var options = ScriptOptions.Default
                 .WithLanguageVersion(LanguageVersion.Latest)
                 .AddReferences(defaultReferences)
                 .WithImports(scriptOptions.UsingList)
                 ;
 
-            var referenceResolvers = scriptOptions.ReferenceResolvers
-                                     ?? Array.Empty<IReferenceResolver>();
-            if (referenceResolvers.Length > 0)
+            if (scriptOptions.ReferenceResolvers.Count > 0)
             {
-                var references = await referenceResolvers
+                var references = await scriptOptions.ReferenceResolvers
                         .Select(r => r.Resolve())
                         .WhenAll()
                         .ContinueWith(r => r.Result.SelectMany(_ => _))

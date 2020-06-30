@@ -3,11 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad.Core", "NatashaPad.Core\NatashaPad.Core.csproj", "{566163F3-089D-4902-8088-A267130908A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad.Core", "src\NatashaPad.Core\NatashaPad.Core.csproj", "{566163F3-089D-4902-8088-A267130908A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad", "NatashaPad\NatashaPad.csproj", "{21121394-B035-47EA-8EB4-8B61E8B56452}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad", "src\NatashaPad\NatashaPad.csproj", "{21121394-B035-47EA-8EB4-8B61E8B56452}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatashaPad.ReferenceResolver.Nuget", "NatashaPad.ReferenceResolver.Nuget\NatashaPad.ReferenceResolver.Nuget.csproj", "{79F9200F-6A75-4BCC-B0E4-2CB6CB33D74B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad.ReferenceResolver.Nuget", "src\NatashaPad.ReferenceResolver.Nuget\NatashaPad.ReferenceResolver.Nuget.csproj", "{79F9200F-6A75-4BCC-B0E4-2CB6CB33D74B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1200B07D-6ECC-44B9-AA76-CE37C456F2EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B3399879-C8A4-4E62-876E-8B30F2B50D47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatashaPad.Test", "test\NatashaPad.Test\NatashaPad.Test.csproj", "{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,9 +61,27 @@ Global
 		{79F9200F-6A75-4BCC-B0E4-2CB6CB33D74B}.Release|x64.Build.0 = Release|Any CPU
 		{79F9200F-6A75-4BCC-B0E4-2CB6CB33D74B}.Release|x86.ActiveCfg = Release|Any CPU
 		{79F9200F-6A75-4BCC-B0E4-2CB6CB33D74B}.Release|x86.Build.0 = Release|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Debug|x64.Build.0 = Debug|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Debug|x86.Build.0 = Debug|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Release|x64.ActiveCfg = Release|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Release|x64.Build.0 = Release|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Release|x86.ActiveCfg = Release|Any CPU
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{566163F3-089D-4902-8088-A267130908A6} = {1200B07D-6ECC-44B9-AA76-CE37C456F2EB}
+		{21121394-B035-47EA-8EB4-8B61E8B56452} = {1200B07D-6ECC-44B9-AA76-CE37C456F2EB}
+		{79F9200F-6A75-4BCC-B0E4-2CB6CB33D74B} = {1200B07D-6ECC-44B9-AA76-CE37C456F2EB}
+		{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4} = {B3399879-C8A4-4E62-876E-8B30F2B50D47}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E13D3900-7B5F-4D15-8520-5444AADCF0A8}
