@@ -95,7 +95,7 @@ public static void Main() => MainAsync(null).Wait();
                     // TODO: handle none filePath reference
                     if (!string.IsNullOrEmpty(reference?.FilePath))
                     {
-                        domain.AddReferencesFromDllFile(reference.FilePath);
+                        domain.LoadPluginFromStream(reference.FilePath);
                     }
                 }
             }
