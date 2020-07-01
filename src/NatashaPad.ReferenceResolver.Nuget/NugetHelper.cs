@@ -1,4 +1,12 @@
-﻿using System;
+﻿using NuGet.Common;
+using NuGet.Packaging.Core;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using WeihanLi.Common.Helpers;
 
 namespace NatashaPad.ReferenceResolver.Nuget
@@ -24,6 +32,37 @@ namespace NatashaPad.ReferenceResolver.Nuget
             executor.Execute();
 
             return folder;
+        }
+
+        public static async Task<bool> EnsurePackageInstalled(string packageName, string packageVersion, string globalPackagesFolder = null)
+        {
+            if (string.IsNullOrEmpty(globalPackagesFolder))
+            {
+                globalPackagesFolder = GetGlobalPackagesFolder();
+            }
+            var packageDir = Path.Combine(globalPackagesFolder, packageName.ToLowerInvariant(),
+                packageVersion.ToLowerInvariant());
+            if (Directory.Exists(packageDir))
+            {
+                return true;
+            }
+
+            var logger = NullLogger.Instance;
+            var cache = new SourceCacheContext();
+            var repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
+
+            var pkgDownloadContext = new PackageDownloadContext(cache);
+            var downloadRes = await repository.GetResourceAsync<DownloadResource>();
+
+            await RetryHelper.TryInvokeAsync(async () =>
+                await downloadRes.GetDownloadResourceResultAsync(
+                    new PackageIdentity(packageName, new NuGetVersion(packageVersion)),
+                    pkgDownloadContext,
+                    globalPackagesFolder,
+                    logger,
+                    CancellationToken.None), r => true);
+
+            return Directory.Exists(packageDir);
         }
     }
 }
