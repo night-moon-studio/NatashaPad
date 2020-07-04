@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NatashaPad
@@ -14,10 +15,10 @@ namespace NatashaPad
 
         public string ReferenceType => "FileReference";
 
-        public Task<PortableExecutableReference[]> Resolve()
+        public async Task<IList<PortableExecutableReference>> Resolve()
         {
             var fileReference = MetadataReference.CreateFromFile(_filePath);
-            return Task.FromResult(new[] { fileReference });
+            return new[] { fileReference };
         }
     }
 }

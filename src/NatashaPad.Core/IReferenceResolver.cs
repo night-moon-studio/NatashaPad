@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NatashaPad
@@ -7,6 +8,6 @@ namespace NatashaPad
     {
         string ReferenceType { get; }
 
-        Task<PortableExecutableReference[]> Resolve();
+        Task<IList<PortableExecutableReference>> Resolve();
     }
 }
