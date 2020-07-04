@@ -23,6 +23,11 @@ namespace NatashaPad
 
     public class CSharpScriptEngine : INScriptEngine
     {
+        static CSharpScriptEngine()
+        {
+            DomainManagement.RegisterDefault<AssemblyDomain>();
+        }
+
         public async Task Execute(string code, NScriptOptions scriptOptions)
         {
             if (code.Contains("static void Main(") || code.Contains("static async Task Main("))

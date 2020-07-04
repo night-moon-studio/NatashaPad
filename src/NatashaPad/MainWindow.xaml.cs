@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NatashaPad.ReferenceResolver.Nuget;
+using System;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -17,6 +18,8 @@ namespace NatashaPad
         public MainWindow(DumperResolver dumperResolver)
         {
             _scriptEngine = new CSharpScriptEngine();
+
+            _scriptOptions.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.3"));
 
             DumpOutHelper.OutputAction += str =>
             {

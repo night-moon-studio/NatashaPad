@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using NuGet.Common;
-using NuGet.Frameworks;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Protocol;
@@ -24,7 +23,6 @@ namespace NatashaPad.ReferenceResolver.Nuget
         private static readonly SourceRepository Repository = NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
 
         private const string DefaultTargetFramework = "netcoreapp3.1";
-        private static readonly NuGetFramework DefaultNugetFramework = new NuGetFramework(DefaultTargetFramework);
 
         private static readonly string GlobalPackagesFolder;
 
