@@ -6,6 +6,7 @@ using Natasha;
 using Natasha.CSharp;
 using Natasha.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -153,7 +154,7 @@ public static void Main() => MainAsync(null).Wait();
                         .WhenAll()
                         .ContinueWith(r => r.Result.SelectMany(_ => _))
                     ;
-                options = options.WithReferences(references);
+                options = options.AddReferences(references);
             }
 
             return await CSharpScript.EvaluateAsync(code, options);

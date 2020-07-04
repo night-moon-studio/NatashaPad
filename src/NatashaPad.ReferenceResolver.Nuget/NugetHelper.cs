@@ -78,10 +78,10 @@ namespace NatashaPad.ReferenceResolver.Nuget
                 {
                     dependencies[packageName] = nugetVersion;
                 }
-                else
-                {
-                    dependencies[packageName] = nugetVersion;
-                }
+            }
+            else
+            {
+                dependencies[packageName] = nugetVersion;
             }
 
             var packagePaths = await dependencies
@@ -106,8 +106,17 @@ namespace NatashaPad.ReferenceResolver.Nuget
                 .GetBestDependency();
             if (null != nearestFramework)
             {
-                var packagePath = Path.Combine(packageDir, "lib", nearestFramework.TargetFramework.Framework, $"{packageId}.dll");
+                var targetFrameworkString = nearestFramework.TargetFramework.GetFrameworkString();
+                packageDir = Path.Combine(packageDir, "lib", targetFrameworkString.ToLowerInvariant().TrimStart('.'));
+
+                var packagePath = Path.Combine(packageDir, $"{packageId}.dll");
                 if (File.Exists(packagePath))
+                {
+                    return packagePath;
+                }
+
+                packagePath = Directory.GetFiles(packageDir, "*.dll", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                if (null != packagePath)
                 {
                     return packagePath;
                 }
@@ -199,15 +208,15 @@ namespace NatashaPad.ReferenceResolver.Nuget
         private static PackageDependencyGroup GetBestDependency(this IReadOnlyList<PackageDependencyGroup> dependencyGroups)
         {
             var group = dependencyGroups.FirstOrDefault(x =>
-                x.TargetFramework.Framework.Equals(DefaultTargetFramework));
+                x.TargetFramework.GetFrameworkString().Equals(DefaultTargetFramework, StringComparison.OrdinalIgnoreCase));
             if (null != group)
             {
                 return group;
             }
 
             group = dependencyGroups
-                    .Where(x => x.TargetFramework.Framework.StartsWith(".NETStandard"))
-                    .OrderByDescending(x => x.TargetFramework.Framework)
+                    .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(x => x.TargetFramework.Version)
                     .FirstOrDefault()
                 ;
             if (null != group)
