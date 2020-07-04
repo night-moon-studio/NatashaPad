@@ -1,5 +1,4 @@
 ﻿using System;
-using WeihanLi.Common;
 using WeihanLi.Extensions;
 
 namespace NatashaPad
@@ -34,9 +33,7 @@ namespace NatashaPad
             }
             else
             {
-                dumpedResult = DependencyResolver.ResolveService<DumperResolver>()
-                    .Resolve(obj.GetType())
-                    .Dump(obj);
+                dumpedResult = DefaultDumper.Instance.Dump(obj);
             }
             DumpOutHelper.OutputAction?.Invoke(dumpedResult);
         }
