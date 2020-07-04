@@ -28,22 +28,13 @@ namespace NatashaPad.ReferenceResolver.Nuget
 
         public static string GetGlobalPackagesFolder()
         {
-            using var executor = new ProcessExecutor("dotnet", "nuget locals global-packages -l");
+            var result = CommandRunner.Capture("dotnet", "nuget locals global-packages -l");
+
             var folder = string.Empty;
-            executor.OnOutputDataReceived += (sender, str) =>
+            if (result.StandardOut.StartsWith("global-packages:"))
             {
-                if (str is null)
-                    return;
-
-                Console.WriteLine(str);
-
-                if (str.StartsWith("global-packages:"))
-                {
-                    folder = str.Substring("global-packages:".Length).Trim();
-                }
-            };
-            executor.Execute();
-
+                folder = result.StandardOut.Substring("global-packages:".Length).Trim();
+            }
             return folder;
         }
 
@@ -100,11 +91,11 @@ namespace NatashaPad.ReferenceResolver.Nuget
             var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>();
             var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger,
                 CancellationToken.None);
-            var nearestFramework = dependencyInfo.DependencyGroups
+            var bestDependency = dependencyInfo.DependencyGroups
                 .GetBestDependency();
-            if (null != nearestFramework)
+            if (null != bestDependency)
             {
-                var targetFrameworkString = nearestFramework.TargetFramework.GetFrameworkString();
+                var targetFrameworkString = bestDependency.TargetFramework.GetFrameworkString();
                 packageDir = Path.Combine(packageDir, "lib", targetFrameworkString.ToLowerInvariant().TrimStart('.'));
 
                 var packagePath = Path.Combine(packageDir, $"{packageId}.dll");
@@ -130,12 +121,12 @@ namespace NatashaPad.ReferenceResolver.Nuget
                 CancellationToken.None);
             if (dependencyInfo.DependencyGroups.Count > 0)
             {
-                var nearestFramework = dependencyInfo.DependencyGroups
+                var bestDependency = dependencyInfo.DependencyGroups
                     .GetBestDependency();
-                if (null != nearestFramework)
+                if (null != bestDependency)
                 {
                     var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var package in nearestFramework.Packages)
+                    foreach (var package in bestDependency.Packages)
                     {
                         if (list.ContainsKey(package.Id))
                         {

@@ -15,10 +15,10 @@ namespace NatashaPad
 
         public string ReferenceType => "FileReference";
 
-        public async Task<IList<PortableExecutableReference>> Resolve()
+        public Task<IList<PortableExecutableReference>> Resolve()
         {
             var fileReference = MetadataReference.CreateFromFile(_filePath);
-            return new[] { fileReference };
+            return Task.FromResult<IList<PortableExecutableReference>>(new[] { fileReference });
         }
     }
 }

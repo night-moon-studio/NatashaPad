@@ -8,11 +8,16 @@ namespace NatashaPad
         {
             "System",
             "System.Collections.Generic",
+            "System.Diagnostics",
             "System.Linq",
+            "System.Linq.Expressions",
+            "System.IO",
+            "System.Reflection",
             "System.Text",
+            "System.Text.RegularExpressions",
             "System.Threading.Tasks",
         };
 
-        public ICollection<IReferenceResolver> ReferenceResolvers { get; } = new List<IReferenceResolver>();
+        public IList<IReferenceResolver> ReferenceResolvers { get; } = new List<IReferenceResolver>();
     }
 }
