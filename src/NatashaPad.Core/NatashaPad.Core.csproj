@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotnetCore.Natasha" Version="3.8.0" />
+    <PackageReference Include="DotnetCore.Natasha" Version="4.0.0-alpha1" />
+    <PackageReference Include="DotNetCore.Natasha.CSharpCompiler" Version="2.0.0-alpha1" />
+    <PackageReference Include="DotNetCore.Natasha.CSharpSyntax" Version="2.0.0-alpha1" />
+    <PackageReference Include="DotNetCore.Natasha.Domain" Version="2.0.0-alpha1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.6.0" />
-    <PackageReference Include="WeihanLi.Common" Version="1.0.40-preview-20200625-063932" />
+    <PackageReference Include="WeihanLi.Common" Version="1.0.40" />
   </ItemGroup>
 
 

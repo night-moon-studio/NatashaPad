@@ -24,7 +24,9 @@ namespace NatashaPad
     {
         static CSharpScriptEngine()
         {
-            DomainManagement.RegisterDefault<AssemblyDomain>();
+            NatashaComponentRegister.RegistDomain<NatashaAssemblyDomain>();
+            NatashaComponentRegister.RegistCompiler<NatashaCSharpCompiler>();
+            NatashaComponentRegister.RegistSyntax<NatashaCSharpSyntax>();
         }
 
         public async Task Execute(string code, NScriptOptions scriptOptions)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NatashaPad.ReferenceResolver.Nuget;
 using WeihanLi.Extensions;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,6 +38,27 @@ namespace NatashaPad.Test
             }
         }
 
+        [Fact]
+        public async Task ExecuteTestWithReference()
+        {
+            DumpOutHelper.OutputAction += Output;
+            try
+            {
+                var options =  new NScriptOptions();
+                options.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.4"));
+                await _scriptEngine.Execute("(1+1).Dump();", options);
+            }
+            catch (Natasha.Error.CompilationException ex)
+            {
+                _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
+                throw;
+            }
+            finally
+            {
+                DumpOutHelper.OutputAction -= Output;
+            }
+        }
+
         private void Output(string msg)
         {
             _testOutputHelper.WriteLine(msg);
@@ -53,6 +75,15 @@ namespace NatashaPad.Test
 
             result = await _scriptEngine.Eval("DateTime.Today.ToString(\"yyyyMMdd\")", new NScriptOptions());
             Assert.Equal(DateTime.Today.ToString("yyyyMMdd"), result);
+        }
+
+        [Fact]
+        public async Task EvalTestWithReference()
+        {
+            var options =  new NScriptOptions();
+            options.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.4"));
+            var result = await _scriptEngine.Eval("1+1", options);
+            Assert.Equal(2, result);
         }
     }
 }
