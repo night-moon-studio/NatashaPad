@@ -26,6 +26,8 @@ namespace NatashaPad.Test
             try
             {
                 await _scriptEngine.Execute("\"Hello NatashaPad\".Dump();", new NScriptOptions());
+
+                await _scriptEngine.Execute("Console.WriteLine(\"Hello NatashaPad\");", new NScriptOptions());
             }
             catch (Natasha.Error.CompilationException ex)
             {
@@ -46,7 +48,7 @@ namespace NatashaPad.Test
             {
                 var options =  new NScriptOptions();
                 options.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.4"));
-                await _scriptEngine.Execute("(1+1).Dump();", options);
+                await _scriptEngine.Execute("(1+1).Dump();", options);                
             }
             catch (Natasha.Error.CompilationException ex)
             {
