@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using WeihanLi.Common.Helpers;
 using WeihanLi.Extensions;
 
 namespace NatashaPad
@@ -110,18 +111,24 @@ public static void Main() => MainAsync(null).Wait();
             assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.File;
 
             var assembly = assBuilder.GetAssembly();
-            // var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
-            var entryPoint = assembly.GetType("Program")?.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-            if (null != entryPoint)
+            using(var capture = await ConsoleOutput.Capture())
             {
-                entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
+                var entryPoint = assembly.GetType("Program")?.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                if (null != entryPoint)
+                {
+                    entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
+                }
+                else
+                {
+                    throw new ArgumentException("can not find entry point");
+                }
+                if(!string.IsNullOrEmpty(capture.StandardOutput))
+                {
+                    DumpOutHelper.OutputAction?.Invoke(capture.StandardOutput);
+                }
             }
-            else
-            {
-                throw new ArgumentException("can not find entry point");
-            }
-
+            
             //using (var executor = new DotNetExecutor(assembly.Location, _outputHelper))
             //{
             //    await executor.ExecuteAsync();
