@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace NatashaPad
+namespace NatashaPad.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
