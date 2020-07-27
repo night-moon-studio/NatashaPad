@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using NatashaPad.ViewModels;
@@ -29,6 +31,8 @@ namespace NatashaPad
             services.AddTransient<NScriptOptions>();
             services.TryAddSingleton<DumperResolver>();
             services.AddSingleton<IDumper, DefaultDumper>();
+
+            services.AddMediatR(typeof(App));
 
             services.AddSingleton(Dispatcher.CurrentDispatcher);
 
