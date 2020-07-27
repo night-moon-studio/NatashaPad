@@ -1,6 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using NatashaPad.ViewModels;
+using NatashaPad.Views;
+
+using System;
 using System.Windows;
+using System.Windows.Threading;
+
 using WeihanLi.Common;
 
 namespace NatashaPad
@@ -18,10 +25,15 @@ namespace NatashaPad
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddTransient<MainWindow>();
             services.AddSingleton<INScriptEngine, CSharpScriptEngine>();
+            services.AddTransient<NScriptOptions>();
             services.TryAddSingleton<DumperResolver>();
             services.AddSingleton<IDumper, DefaultDumper>();
+
+            services.AddSingleton(Dispatcher.CurrentDispatcher);
+
+            services.TryAddTransient<MainWindow>();
+            services.TryAddTransient<MainViewModel>();
         }
 
         private void Init()
@@ -30,9 +42,15 @@ namespace NatashaPad
             ConfigureServices(services);
             DependencyResolver.SetDependencyResolver(services);
 
-            services.BuildServiceProvider()
-                .GetRequiredService<MainWindow>()
-                .Show();
+            Show(services.BuildServiceProvider());
+        }
+
+        private void Show(IServiceProvider serviceProvider)
+        {
+            var view = serviceProvider.GetRequiredService<MainWindow>();
+            var vm = serviceProvider.GetRequiredService<MainViewModel>();
+            view.DataContext = vm;
+            view.Show();
         }
     }
 }

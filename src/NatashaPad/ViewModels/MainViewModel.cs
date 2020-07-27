@@ -1,9 +1,12 @@
-﻿using Prism.Mvvm;
+﻿using Prism.Commands;
+using Prism.Mvvm;
 
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace NatashaPad.ViewModels
 {
@@ -11,78 +14,45 @@ namespace NatashaPad.ViewModels
     {
         private readonly INScriptEngine _scriptEngine;
         private readonly DumperResolver _dumperResolver;
+        private readonly Dispatcher _dispatcher;
+        private readonly NScriptOptions _scriptOptions;
 
-        private readonly NScriptOptions _scriptOptions = new NScriptOptions();
-
-        public MainViewModel(DumperResolver dumperResolver)
+        public MainViewModel(DumperResolver dumperResolver,
+            INScriptEngine scriptEngine,
+            NScriptOptions scriptOptions,
+            Dispatcher dispatcher)
         {
-            _scriptEngine = new CSharpScriptEngine();
-
-            DumpOutHelper.OutputAction += str =>
-            {
-                if (str is null)
-                    return;
-
-                //https://stackoverflow.com/questions/1644079/change-wpf-controls-from-a-non-main-thread-using-dispatcher-invoke
-                if (Application.Current.Dispatcher.CheckAccess())
-                {
-                    txtOutput.AppendText(str);
-                    txtOutput.AppendText(Environment.NewLine);
-                }
-                else
-                {
-                    Application.Current.Dispatcher.BeginInvoke(
-                        DispatcherPriority.Background,
-                        new Action(() =>
-                        {
-                            txtOutput.AppendText(str);
-                            txtOutput.AppendText(Environment.NewLine);
-                        }));
-                }
-            };
-
             _dumperResolver = dumperResolver;
-            InitializeComponent();
-            txtInput.Text = "\"Hello NatashaPad\"";
-            txtOutput.AppendText("Output");
+            _scriptEngine = scriptEngine;
+            _scriptOptions = scriptOptions;
+            _dispatcher = dispatcher;
+
+            _input = "\"Hello NatashaPad\"";
+            _output = "Output";
+
+            DumpOutHelper.OutputAction += Dump;
+
+            RunCommand = new DelegateCommand(async () => await RunAsync());
         }
 
-        private async void BtnRun_OnClick(object sender, RoutedEventArgs e)
+        private void Dump(string content)
         {
-            var input = txtInput.Text?.Trim();
-            if (string.IsNullOrEmpty(input))
-            {
+            if (content is null)
                 return;
-            }
-            txtOutput.Text = string.Empty;
 
-            try
+            //https://stackoverflow.com/questions/1644079/change-wpf-controls-from-a-non-main-thread-using-dispatcher-invoke
+            if (_dispatcher.CheckAccess())
             {
-                if (input.Contains("static void Main(") || input.EndsWith(";"))
-                {
-                    // statements, execute
-                    await _scriptEngine.Execute(input, _scriptOptions);
-                }
-                else
-                {
-                    // expression, eval
-                    var result = await _scriptEngine.Eval(txtInput.Text, _scriptOptions);
-
-                    if (null == result)
-                    {
-                        txtOutput.AppendText("(null)");
-                    }
-                    else
-                    {
-                        var dumpedResult = _dumperResolver.Resolve(result.GetType())
-                            .Dump(result);
-                        txtOutput.AppendText(dumpedResult);
-                    }
-                }
+                Do();
             }
-            catch (Exception exception)
+            else
             {
-                MessageBox.Show(exception.Message, "执行发生异常");
+                _dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)Do);
+            }
+
+            void Do()
+            {
+                Output += $"{content}{Environment.NewLine}";
             }
         }
 
@@ -101,6 +71,45 @@ namespace NatashaPad.ViewModels
         }
 
         public ICommand RunCommand { get; }
+        private async Task RunAsync()
+        {
+            var input = _input?.Trim();
+            if (string.IsNullOrEmpty(input))
+            {
+                return;
+            }
+            Output = string.Empty;
+
+            //try
+            //{
+            if (input.Contains("static void Main(") || input.EndsWith(";"))
+            {
+                // statements, execute
+                await _scriptEngine.Execute(input, _scriptOptions);
+            }
+            else
+            {
+                // expression, eval
+                var result = await _scriptEngine.Eval(input, _scriptOptions);
+
+                if (null == result)
+                {
+                    Output += "(null)";
+                }
+                else
+                {
+                    var dumpedResult = _dumperResolver.Resolve(result.GetType())
+                        .Dump(result);
+                    Output += dumpedResult;
+                }
+            }
+            //}
+            //catch (Exception exception)
+            //{
+            //    MessageBox.Show(exception.Message, "执行发生异常");
+            //}
+        }
+
         public ICommand UsingManageCommand { get; }
         public ICommand RefManageCommand { get; }
     }
