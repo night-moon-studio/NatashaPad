@@ -78,34 +78,34 @@ namespace NatashaPad.ViewModels
             }
             Output = string.Empty;
 
-            //try
-            //{
-            if (input.Contains("static void Main(") || input.EndsWith(";"))
+            try
             {
-                // statements, execute
-                await _scriptEngine.Execute(input, _scriptOptions);
-            }
-            else
-            {
-                // expression, eval
-                var result = await _scriptEngine.Eval(input, _scriptOptions);
-
-                if (null == result)
+                if (input.Contains("static void Main(") || input.EndsWith(";"))
                 {
-                    Output += "(null)";
+                    // statements, execute
+                    await _scriptEngine.Execute(input, _scriptOptions);
                 }
                 else
                 {
-                    var dumpedResult = _dumperResolver.Resolve(result.GetType())
-                        .Dump(result);
-                    Output += dumpedResult;
+                    // expression, eval
+                    var result = await _scriptEngine.Eval(input, _scriptOptions);
+
+                    if (null == result)
+                    {
+                        Output += "(null)";
+                    }
+                    else
+                    {
+                        var dumpedResult = _dumperResolver.Resolve(result.GetType())
+                            .Dump(result);
+                        Output += dumpedResult;
+                    }
                 }
             }
-            //}
-            //catch (Exception exception)
-            //{
-            //    MessageBox.Show(exception.Message, "执行发生异常");
-            //}
+            catch (Exception exception)
+            {
+                ShowMessage(exception.Message);
+            }
         }
 
         public ICommand UsingManageCommand { get; }

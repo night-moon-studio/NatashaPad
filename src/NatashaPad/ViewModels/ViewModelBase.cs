@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using NatashaPad.Services.MessageBox;
 
 namespace NatashaPad.ViewModels
 {
@@ -23,5 +24,10 @@ namespace NatashaPad.ViewModels
         protected Dispatcher Dispatcher => commonParam.Dispatcher;
         protected IServiceProvider ServiceProvider => commonParam.ServiceProvider;
         public T GetService<T>() => ServiceProvider.GetService<T>();
+
+        protected void ShowMessage(string message)
+        {
+            Mediator.Publish(new MessageNotification(message));
+        }
     }
 }
