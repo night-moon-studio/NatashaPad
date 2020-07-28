@@ -32,6 +32,8 @@ namespace NatashaPad
             services.TryAddSingleton<DumperResolver>();
             services.AddSingleton<IDumper, DefaultDumper>();
 
+            services.AddTransient<CommonParam>();
+
             services.AddMediatR(typeof(App));
 
             services.AddSingleton(Dispatcher.CurrentDispatcher);
