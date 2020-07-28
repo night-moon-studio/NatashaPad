@@ -10,22 +10,20 @@ using System.Windows.Threading;
 
 namespace NatashaPad.ViewModels
 {
-    public class MainViewModel : BindableBase
+    public class MainViewModel : ViewModelBase
     {
         private readonly INScriptEngine _scriptEngine;
         private readonly DumperResolver _dumperResolver;
-        private readonly Dispatcher _dispatcher;
         private readonly NScriptOptions _scriptOptions;
 
         public MainViewModel(DumperResolver dumperResolver,
             INScriptEngine scriptEngine,
             NScriptOptions scriptOptions,
-            Dispatcher dispatcher)
+            CommonParam commonParam) : base(commonParam)
         {
             _dumperResolver = dumperResolver;
             _scriptEngine = scriptEngine;
             _scriptOptions = scriptOptions;
-            _dispatcher = dispatcher;
 
             _input = "\"Hello NatashaPad\"";
             _output = "Output";
@@ -41,13 +39,13 @@ namespace NatashaPad.ViewModels
                 return;
 
             //https://stackoverflow.com/questions/1644079/change-wpf-controls-from-a-non-main-thread-using-dispatcher-invoke
-            if (_dispatcher.CheckAccess())
+            if (Dispatcher.CheckAccess())
             {
                 Do();
             }
             else
             {
-                _dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)Do);
+                Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)Do);
             }
 
             void Do()
