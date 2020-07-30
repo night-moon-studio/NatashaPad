@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using NatashaPad.ViewModels.Base;
+using Prism.Commands;
 using Prism.Mvvm;
 
 using System;
