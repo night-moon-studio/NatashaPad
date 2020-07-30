@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using NatashaPad.Services.MessageBox;
+using NatashaPad.MvvmServices.MessageBox;
 
 namespace NatashaPad.ViewModels
 {

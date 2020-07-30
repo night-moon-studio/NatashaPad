@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using NatashaPad.MvvmServices.MessageBox;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
 
@@ -34,7 +35,7 @@ namespace NatashaPad
 
             services.AddTransient<CommonParam>();
 
-            services.AddMediatR(typeof(App));
+            services.AddMediatR(typeof(App), typeof(MessageNotification));
 
             services.AddSingleton(Dispatcher.CurrentDispatcher);
 
