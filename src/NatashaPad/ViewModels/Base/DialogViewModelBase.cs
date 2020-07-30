@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace NatashaPad.ViewModels
+namespace NatashaPad.ViewModels.Base
 {
     internal abstract class DialogViewModelBase : ViewModelBase
     {

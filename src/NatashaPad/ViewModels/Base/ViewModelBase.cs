@@ -9,7 +9,7 @@ using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NatashaPad.MvvmServices.MessageBox;
 
-namespace NatashaPad.ViewModels
+namespace NatashaPad.ViewModels.Base
 {
     public abstract class ViewModelBase : BindableBase
     {
