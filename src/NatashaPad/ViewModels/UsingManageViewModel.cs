@@ -27,11 +27,6 @@ namespace NatashaPad.ViewModels
         }
 
         public RemovableCollection<NamespaceItem> AllItems { get; }
-
-        protected override Task OkAsync()
-        {
-            return Task.CompletedTask;
-        }
     }
 
     internal class NamespaceItem : CollectionItem
