@@ -16,8 +16,17 @@ namespace NatashaPad.ViewModels.Base
             CancelCommand = new DelegateCommand(async () => await CancelAsync(), CanCancel);
         }
 
+        /// <summary>
+        /// 对话框的结果
+        /// </summary>
+        public bool Succeed { get; protected set; }
+
         public ICommand OkCommand { get; }
-        protected abstract Task OkAsync();
+        protected virtual Task OkAsync()
+        {
+            Succeed = true;
+            return Task.CompletedTask;
+        }
         protected virtual bool CanOk() => true;
 
         public ICommand CancelCommand { get; }
