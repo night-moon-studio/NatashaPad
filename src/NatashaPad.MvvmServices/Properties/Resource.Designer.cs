@@ -61,6 +61,15 @@ namespace NatashaPad.MvvmServices.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 找不到 {0} 匹配的 视图类型！.
+        /// </summary>
+        internal static string CannotFindMatchedViewTypeOfFormatString {
+            get {
+                return ResourceManager.GetString("CannotFindMatchedViewTypeOfFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 执行发生异常.
         /// </summary>
         internal static string ErrorMessageBoxTitleString {
