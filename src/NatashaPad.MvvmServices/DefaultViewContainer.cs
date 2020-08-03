@@ -3,20 +3,23 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NatashaPad.MvvmServices
 {
     internal class DefaultViewContainer : IViewContainer, IViewLocator
     {
-        private readonly IServiceCollection services;
         private readonly Dictionary<Type, Type> map;
 
-        public DefaultViewContainer(IServiceCollection services)
+        public DefaultViewContainer()
         {
-            this.services = services;
-
             map = new Dictionary<Type, Type>();
+        }
+
+        public DefaultViewContainer(IEnumerable<Tuple<Type, Type>> tuples)
+        {
+            map = tuples.ToDictionary(x => x.Item1, x => x.Item2);
         }
 
         public Type GetView<TViewModel>()
@@ -34,7 +37,6 @@ namespace NatashaPad.MvvmServices
         public void Register<TView, TViewModel>() where TView : class
         {
             Register(typeof(TViewModel), typeof(TView));
-            services.TryAddTransient<TView>();
         }
 
         private void Register(Type viewModelType, Type viewType)
