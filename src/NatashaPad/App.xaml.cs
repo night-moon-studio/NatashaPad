@@ -39,8 +39,10 @@ namespace NatashaPad
 
             services.AddSingleton(Dispatcher.CurrentDispatcher);
 
-            services.TryAddTransient<MainWindow>();
-            services.TryAddTransient<MainViewModel>();
+            services.UsingViewLocator(options =>
+            {
+                options.Register<MainWindow, MainViewModel>();
+            });
         }
 
         private void Init()

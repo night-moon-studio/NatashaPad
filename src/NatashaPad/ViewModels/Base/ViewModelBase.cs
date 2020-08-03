@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NatashaPad.MvvmServices.MessageBox;
+using NatashaPad.MvvmServices;
 
 namespace NatashaPad.ViewModels.Base
 {
@@ -28,6 +29,19 @@ namespace NatashaPad.ViewModels.Base
         protected void ShowMessage(string message)
         {
             Mediator.Publish(new MessageNotification(message));
+        }
+
+        protected T Show<T>() where T : ViewModelBase
+        {
+            var vm = GetService<T>();
+            Mediator.Send(new ShowViewRequest<T>(vm));
+            return vm;
+        }
+
+        protected T Show<T>(T vm) where T : ViewModelBase
+        {
+            Mediator.Send(new ShowViewRequest<T>(vm));
+            return vm;
         }
     }
 }
