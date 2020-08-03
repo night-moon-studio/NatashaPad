@@ -7,7 +7,7 @@ using System.Text;
 
 namespace NatashaPad.MvvmServices
 {
-    internal class DefaultViewContainer : IViewContainer, IViewLocator, IViewInstanceLocator
+    internal class DefaultViewContainer : IViewContainer, IViewLocator
     {
         private readonly IServiceCollection services;
         private readonly Dictionary<Type, Type> map;
@@ -18,8 +18,6 @@ namespace NatashaPad.MvvmServices
 
             map = new Dictionary<Type, Type>();
         }
-
-        
 
         public Type GetView<TViewModel>()
         {
@@ -33,7 +31,7 @@ namespace NatashaPad.MvvmServices
             return viewType;
         }
 
-        public void Register<TView, TViewModel>() where TView:class
+        public void Register<TView, TViewModel>() where TView : class
         {
             Register(typeof(TViewModel), typeof(TView));
             services.TryAddTransient<TView>();
@@ -47,16 +45,20 @@ namespace NatashaPad.MvvmServices
 
     internal class DefaultViewLocator : IViewInstanceLocator
     {
-        //public object GetView<TViewModel>(TViewModel vm)
-        //{
-        //    if (!map.TryGetValue(typeof(TViewModel), out var viewType))
-        //    {
-        //        throw new KeyNotFoundException(
-        //            string.Format(Properties.Resource.CannotFindMatchedViewTypeOfFormatString,
-        //            typeof(TViewModel).Name));
-        //    }
+        private readonly IViewLocator viewLocator;
+        private readonly IServiceProvider serviceProvider;
 
-        //    return serviceProvider.GetService(viewType);
-        //}
+        public DefaultViewLocator(
+            IViewLocator viewLocator,
+            IServiceProvider serviceProvider)
+        {
+            this.viewLocator = viewLocator;
+            this.serviceProvider = serviceProvider;
+        }
+
+        public object GetView<TViewModel>(TViewModel vm)
+        {
+            return serviceProvider.GetService(viewLocator.GetView<TViewModel>());
+        }
     }
 }
