@@ -1,13 +1,11 @@
-﻿using NatashaPad.ViewModels.Base;
-using Prism.Commands;
-using Prism.Mvvm;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+
+using NatashaPad.ViewModels.Base;
+
+using Prism.Commands;
 
 namespace NatashaPad.ViewModels
 {
@@ -32,12 +30,15 @@ namespace NatashaPad.ViewModels
             DumpOutHelper.OutputAction += Dump;
 
             RunCommand = new DelegateCommand(async () => await RunAsync());
+            UsingManageCommand = new DelegateCommand(UsingManageShow);
         }
 
         private void Dump(string content)
         {
             if (content is null)
+            {
                 return;
+            }
 
             //https://stackoverflow.com/questions/1644079/change-wpf-controls-from-a-non-main-thread-using-dispatcher-invoke
             if (Dispatcher.CheckAccess())
@@ -49,10 +50,7 @@ namespace NatashaPad.ViewModels
                 Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)Do);
             }
 
-            void Do()
-            {
-                Output += $"{content}{Environment.NewLine}";
-            }
+            void Do() => Output += $"{content}{Environment.NewLine}";
         }
 
         private string _input;
@@ -72,7 +70,7 @@ namespace NatashaPad.ViewModels
         public ICommand RunCommand { get; }
         private async Task RunAsync()
         {
-            var input = _input?.Trim();
+            string input = _input?.Trim();
             if (string.IsNullOrEmpty(input))
             {
                 return;
@@ -89,7 +87,7 @@ namespace NatashaPad.ViewModels
                 else
                 {
                     // expression, eval
-                    var result = await _scriptEngine.Eval(input, _scriptOptions);
+                    object result = await _scriptEngine.Eval(input, _scriptOptions);
 
                     if (null == result)
                     {
@@ -97,7 +95,7 @@ namespace NatashaPad.ViewModels
                     }
                     else
                     {
-                        var dumpedResult = _dumperResolver.Resolve(result.GetType())
+                        string dumpedResult = _dumperResolver.Resolve(result.GetType())
                             .Dump(result);
                         Output += dumpedResult;
                     }
@@ -110,6 +108,10 @@ namespace NatashaPad.ViewModels
         }
 
         public ICommand UsingManageCommand { get; }
+        private void UsingManageShow()
+        {
+            UsingManageViewModel vm = Show<UsingManageViewModel>();
+        }
         public ICommand RefManageCommand { get; }
     }
 }

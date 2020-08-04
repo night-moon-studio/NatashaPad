@@ -42,6 +42,7 @@ namespace NatashaPad
             services.UsingViewLocator(options =>
             {
                 options.Register<MainWindow, MainViewModel>();
+                options.Register<UsingManageView, UsingManageViewModel>();
             });
         }
 
