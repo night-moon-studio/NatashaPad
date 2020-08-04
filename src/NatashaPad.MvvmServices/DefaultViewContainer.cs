@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NatashaPad.MvvmServices
 {
@@ -22,13 +19,13 @@ namespace NatashaPad.MvvmServices
             map = tuples.ToDictionary(x => x.Item1, x => x.Item2);
         }
 
-        public Type GetView<TViewModel>()
+        public Type GetView(Type vmType)
         {
-            if (!map.TryGetValue(typeof(TViewModel), out var viewType))
+            if (!map.TryGetValue(vmType, out Type viewType))
             {
                 throw new KeyNotFoundException(
                     string.Format(Properties.Resource.CannotFindMatchedViewTypeOfFormatString,
-                    typeof(TViewModel).Name));
+                    vmType.Name));
             }
 
             return viewType;
@@ -58,9 +55,9 @@ namespace NatashaPad.MvvmServices
             this.serviceProvider = serviceProvider;
         }
 
-        public object GetView<TViewModel>(TViewModel vm)
+        public object GetView(Type type)
         {
-            return serviceProvider.GetService(viewLocator.GetView<TViewModel>());
+            return serviceProvider.GetService(viewLocator.GetView(type));
         }
     }
 }

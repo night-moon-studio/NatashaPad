@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NatashaPad.MvvmServices
 {
@@ -11,11 +9,19 @@ namespace NatashaPad.MvvmServices
 
     internal interface IViewLocator
     {
-        Type GetView<TViewModel>();
+        Type GetView(Type viewModelType);
     }
 
     public interface IViewInstanceLocator
     {
-        object GetView<TViewModel>(TViewModel vm);
+        object GetView(Type viewModelType);
+    }
+
+    public static class ViewContainerExtensions
+    {
+        public static object GetView<TViewModel>(IViewInstanceLocator locator)
+        {
+            return locator.GetView(typeof(TViewModel));
+        }
     }
 }
