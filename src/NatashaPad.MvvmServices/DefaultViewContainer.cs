@@ -14,9 +14,9 @@ namespace NatashaPad.MvvmServices
             map = new Dictionary<Type, Type>();
         }
 
-        public DefaultViewContainer(IEnumerable<Tuple<Type, Type>> tuples)
+        internal DefaultViewContainer(IEnumerable<Tuple<Type, Type>> tuples)
         {
-            map = tuples.ToDictionary(x => x.Item1, x => x.Item2);
+            map = tuples.ToDictionary(x => x.Item2, x => x.Item1);
         }
 
         public Type GetView(Type vmType)
