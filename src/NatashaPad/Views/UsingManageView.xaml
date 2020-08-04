@@ -6,14 +6,16 @@
              xmlns:local="clr-namespace:NatashaPad.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
+             Height="400"
+             Width="600"
              d:DesignHeight="400"
-             d:DesignWidth="600">
-    <Grid Background="{StaticResource MaterialDesignLightBackground}">
+             d:DesignWidth="500">
+    <Grid Background="{StaticResource MaterialDesignDarkSeparatorBackground}">
         <StackPanel Margin="20">
             <Border Style="{StaticResource MaterialDesignToolBarMainPanelBorderStyle}"
                     Margin="0"
                     Padding="20"
-                    Background="{StaticResource MaterialDesignDarkSeparatorBackground}">
+                    Background="{StaticResource MaterialDesignLightBackground}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right">
