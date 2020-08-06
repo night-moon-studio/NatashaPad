@@ -13,4 +13,9 @@ namespace NatashaPad.MvvmServices.Windows
     {
         void ShowDialog<TViewModel>(TViewModel viewModel);
     }
+
+    public interface ICurrentWindowService
+    {
+        void Close();
+    }
 }
