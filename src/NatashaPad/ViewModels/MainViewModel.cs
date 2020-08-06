@@ -110,7 +110,7 @@ namespace NatashaPad.ViewModels
         public ICommand UsingManageCommand { get; }
         private void UsingManageShow()
         {
-            UsingManageViewModel vm = Show<UsingManageViewModel>();
+            UsingManageViewModel vm = ShowDialog<UsingManageViewModel>();
         }
         public ICommand RefManageCommand { get; }
     }
