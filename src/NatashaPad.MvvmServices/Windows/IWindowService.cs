@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NatashaPad.MvvmServices
+namespace NatashaPad.MvvmServices.Windows
 {
     public interface IWindowService
     {
-        TViewModel Show<TViewModel>();
+        void Show<TViewModel>(TViewModel viewModel);
     }
 
     public interface IDialogService : IWindowService
     {
-        TViewModel ShowDialog<TViewModel>();
+        void ShowDialog<TViewModel>(TViewModel viewModel);
     }
 }

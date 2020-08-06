@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using NatashaPad.MvvmServices;
+using NatashaPad.MvvmServices.Windows;
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton(new DefaultViewContainer(options));
             services.TryAddSingleton<IViewContainer>(s => s.GetService<DefaultViewContainer>());
             services.TryAddSingleton<IViewLocator>(s => s.GetService<DefaultViewContainer>());
+
+            services.TryAddSingleton<IDialogService, DefaultDialogService>();
 
             services.TryAddSingleton<IViewInstanceLocator, DefaultViewLocator>();
         }
