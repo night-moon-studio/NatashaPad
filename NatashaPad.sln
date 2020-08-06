@@ -15,9 +15,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B3399879-C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad.Test", "test\NatashaPad.Test\NatashaPad.Test.csproj", "{DAA3687A-D8DA-4ACD-85D1-EE6FA9B477F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatashaPad.MvvmServices", "src\NatashaPad.MvvmServices\NatashaPad.MvvmServices.csproj", "{EB0B5941-6B00-47B5-9C4A-EB216688B321}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad.MvvmServices", "src\NatashaPad.MvvmServices\NatashaPad.MvvmServices.csproj", "{EB0B5941-6B00-47B5-9C4A-EB216688B321}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatashaPad.MvvmBase", "src\NatashaPad.MvvmBase\NatashaPad.MvvmBase.csproj", "{3D0B62CD-BD84-4CE8-B2D8-6B1912FDC021}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NatashaPad.MvvmBase", "src\NatashaPad.MvvmBase\NatashaPad.MvvmBase.csproj", "{3D0B62CD-BD84-4CE8-B2D8-6B1912FDC021}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{4F498A5A-DDF4-4EEC-8F07-5D50C252C731}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+		Roadmap.md = Roadmap.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
