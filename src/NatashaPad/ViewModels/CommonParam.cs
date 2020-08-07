@@ -13,18 +13,18 @@ namespace NatashaPad.ViewModels
     {
         public CommonParam(IServiceProvider serviceProvider,
             IMediator mediatr,
-            IDialogService dialogService,
+            IWindowManager windowManager,
             Dispatcher dispatcher)
         {
             ServiceProvider = serviceProvider;
             Mediatr = mediatr;
-            DialogService = dialogService;
+            WindowManager = windowManager;
             Dispatcher = dispatcher;
         }
 
         public IServiceProvider ServiceProvider { get; }
         public IMediator Mediatr { get; }
-        public IDialogService DialogService { get; }
+        public IWindowManager WindowManager { get; }
         public Dispatcher Dispatcher { get; }
     }
 }

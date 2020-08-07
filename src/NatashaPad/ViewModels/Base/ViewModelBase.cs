@@ -6,7 +6,6 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using NatashaPad.MvvmServices.MessageBox;
-using NatashaPad.MvvmServices.ViewRequests;
 using NatashaPad.MvvmServices.Windows;
 
 using Prism.Mvvm;
@@ -35,17 +34,15 @@ namespace NatashaPad.ViewModels.Base
             Mediator.Publish(new MessageNotification(message));
         }
 
-        protected IDialogService DialogService => commonParam.DialogService;
+        protected IWindowManager WindowManager => commonParam.WindowManager;
         protected T ShowDialog<T>() where T : ViewModelBase
         {
-            T vm = GetService<T>();
-            DialogService.ShowDialog(vm);
-            return vm;
+            return ShowDialog(GetService<T>());
         }
 
         protected T ShowDialog<T>(T vm) where T : ViewModelBase
         {
-            DialogService.ShowDialog(vm);
+            WindowManager.GetDialogService(vm).ShowDialog();
             return vm;
         }
     }
