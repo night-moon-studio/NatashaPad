@@ -31,6 +31,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IDialogService, DefaultDialogService>();
 
             services.TryAddSingleton<IViewInstanceLocator, DefaultViewLocator>();
+
+            services.TryAddSingleton<IWindowProvider, DefaultWindowProvider>();
         }
     }
 }
