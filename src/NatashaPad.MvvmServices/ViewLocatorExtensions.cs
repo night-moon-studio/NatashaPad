@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IViewContainer>(s => s.GetService<DefaultViewContainer>());
             services.TryAddSingleton<IViewLocator>(s => s.GetService<DefaultViewContainer>());
 
-            services.TryAddSingleton<IDialogService, DefaultDialogService>();
+            services.TryAddSingleton<IWindowManager, DefaultWindowManager>();
 
             services.TryAddSingleton<IViewInstanceLocator, DefaultViewLocator>();
 
