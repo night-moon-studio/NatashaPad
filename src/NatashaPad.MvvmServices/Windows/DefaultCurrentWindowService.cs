@@ -5,11 +5,11 @@ using System.Windows;
 
 namespace NatashaPad.MvvmServices.Windows
 {
-    internal class DefaultDialogService : IDialogService, IWindowService
+    internal class DefaultCurrentWindowService : ICurrentWindowService
     {
         private readonly Window window;
 
-        public DefaultDialogService(Window window)
+        public DefaultCurrentWindowService(Window window)
         {
             this.window = window;
         }
@@ -27,11 +27,6 @@ namespace NatashaPad.MvvmServices.Windows
         public void Show()
         {
             window.Show();
-        }
-
-        public void ShowDialog()
-        {
-            window.ShowDialog();
         }
     }
 }

@@ -4,18 +4,29 @@ using System.Text;
 
 namespace NatashaPad.MvvmServices.Windows
 {
+    public interface IWindowManager
+    {
+        ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel);
+        IWindowService GetWindowService<TViewModel>(TViewModel viewModel);
+        IDialogService GetDialogService<TViewModel>(TViewModel viewModel);
+    }
+
     public interface IWindowService
     {
-        void Show<TViewModel>(TViewModel viewModel);
+        void Show();
+        void Hide();
+        void Close();
     }
 
     public interface IDialogService : IWindowService
     {
-        void ShowDialog<TViewModel>(TViewModel viewModel);
+        void ShowDialog();
     }
 
     public interface ICurrentWindowService
     {
+        void Show();
+        void Hide();
         void Close();
     }
 }
