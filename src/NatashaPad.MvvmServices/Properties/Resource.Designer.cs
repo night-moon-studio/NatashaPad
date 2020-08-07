@@ -77,5 +77,14 @@ namespace NatashaPad.MvvmServices.Properties {
                 return ResourceManager.GetString("ErrorMessageBoxTitleString", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未找到视图模型所匹配的窗口实例，请确认窗口是否已经关闭！.
+        /// </summary>
+        internal static string FoundNoWindowErrorString {
+            get {
+                return ResourceManager.GetString("FoundNoWindowErrorString", resourceCulture);
+            }
+        }
     }
 }

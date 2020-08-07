@@ -123,4 +123,7 @@
   <data name="ErrorMessageBoxTitleString" xml:space="preserve">
     <value>执行发生异常</value>
   </data>
+  <data name="FoundNoWindowErrorString" xml:space="preserve">
+    <value>未找到视图模型所匹配的窗口实例，请确认窗口是否已经关闭！</value>
+  </data>
 </root>
