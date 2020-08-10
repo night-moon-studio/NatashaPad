@@ -7,7 +7,7 @@ using MediatR;
 
 namespace NatashaPad.MvvmServices.Windows
 {
-    public class DefaultWindowManager : IWindowManager
+    internal class DefaultWindowManager : IWindowManager
     {
         private readonly IViewInstanceLocator locator;
         private readonly IWindowProvider windowProvider;
@@ -36,12 +36,8 @@ namespace NatashaPad.MvvmServices.Windows
         public IDialogService GetDialogService<TViewModel>(TViewModel viewModel)
         {
             var view = locator.GetView(typeof(TViewModel));
-
-            if (!(view is Window window))
-            {
-                window = windowProvider.Create(view, viewModel);
-                window.Closed += Window_Closed;
-            }
+            var window = windowProvider.Create(view, viewModel);
+            window.Closed += Window_Closed;
 
             windowMap[viewModel] = window;
             return new DefaultDialogService(window);
