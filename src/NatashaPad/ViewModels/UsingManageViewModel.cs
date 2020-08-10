@@ -37,6 +37,5 @@ namespace NatashaPad.ViewModels
             get => _namespace;
             set => SetProperty(ref _namespace, value);
         }
-
     }
 }
