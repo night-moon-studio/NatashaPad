@@ -25,12 +25,18 @@ namespace NatashaPad.ViewModels.Base
         protected virtual Task OkAsync()
         {
             Succeed = true;
+            CloseMe();
             return Task.CompletedTask;
         }
         protected virtual bool CanOk() => true;
 
         public ICommand CancelCommand { get; }
-        protected virtual Task CancelAsync() => Task.CompletedTask;
+        protected virtual Task CancelAsync()
+        {
+            CloseMe();
+            return Task.CompletedTask;
+        }
+
         protected virtual bool CanCancel() => true;
     }
 }
