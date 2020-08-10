@@ -45,5 +45,9 @@ namespace NatashaPad.ViewModels.Base
             WindowManager.GetDialogService(vm).ShowDialog();
             return vm;
         }
+
+        protected ICurrentWindowService GetCurrentView => WindowManager.GetCurrent(this);
+
+        protected void CloseMe() => GetCurrentView.Close();
     }
 }
