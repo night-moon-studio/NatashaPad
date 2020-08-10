@@ -9,8 +9,12 @@ namespace NatashaPad.MvvmServices.Windows
     {
         public Window Create(object view, object viewModel)
         {
-            var window = new Window();
-            window.Content = view;
+            if (!(view is Window window))
+            {
+                window = new Window();
+                window.Content = view;
+            }
+
             window.DataContext = viewModel;
             window.SizeToContent = SizeToContent.WidthAndHeight;
             return window;
