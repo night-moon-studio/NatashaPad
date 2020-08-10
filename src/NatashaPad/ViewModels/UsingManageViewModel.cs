@@ -15,9 +15,15 @@ namespace NatashaPad.ViewModels
 {
     internal class UsingManageViewModel : DialogViewModelBase
     {
-        public UsingManageViewModel(CommonParam commonParam) : base(commonParam)
+        public UsingManageViewModel(CommonParam commonParam,
+            IEnumerable<string> namespaces) : base(commonParam)
         {
             AllItems = new RemovableCollection<NamespaceItem>();
+            foreach (var name in namespaces)
+            {
+                AllItems.Add(new NamespaceItem(name));
+            }
+
             AddCommand = new DelegateCommand(Add);
         }
 
@@ -32,6 +38,13 @@ namespace NatashaPad.ViewModels
 
     internal class NamespaceItem : CollectionItem
     {
+        public NamespaceItem() { }
+
+        public NamespaceItem(string name)
+        {
+            _namespace = name;
+        }
+
         private string _namespace;
         public string Namespace
         {
