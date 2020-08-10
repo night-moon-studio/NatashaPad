@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="NatashaPad.Views.UsingManageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:NatashaPad.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             Height="400"
+             Width="600"
+             d:DesignHeight="400"
+             d:DesignWidth="500">
+    <Grid Background="{StaticResource MaterialDesignDarkSeparatorBackground}">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Border Style="{StaticResource MaterialDesignToolBarMainPanelBorderStyle}"
+                    Margin="0"
+                    Padding="20"
+                    Background="{StaticResource MaterialDesignLightBackground}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}"
+                                Command="{Binding AddCommand}">
+                            <materialDesign:PackIcon Kind="Plus"
+                                                     Height="24"
+                                                     Width="24" />
+                        </Button>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Height="215"
+                                  Margin="0 10 0 0">
+                        <StackPanel Margin="0 0 10 0">
+                            <ItemsControl Margin="0 10 0 0"
+                                          MinHeight="200"
+                                          ItemsSource="{Binding AllItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0 0 0 20">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Text="{Binding Namespace,UpdateSourceTrigger=PropertyChanged}"
+                                                     Grid.Column="0" />
+                                            <Button Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                                    Width="50"
+                                                    Margin="20 0 0 0"
+                                                    Grid.Column="1"
+                                                    Command="{Binding DeleteThisCommand}">
+                                                <materialDesign:PackIcon Kind="Minus"
+                                                                         Height="16"
+                                                                         Width="16" />
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+            <StackPanel Grid.Row="1"
+                        Margin="0 20 0 0"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button Content="确认"
+                        Width="80"
+                        IsDefault="True"
+                        Command="{Binding OkCommand}" />
+                <Button Content="取消"
+                        IsCancel="True"
+                        Width="80"
+                        Margin="20 0 0 0"
+                        Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
