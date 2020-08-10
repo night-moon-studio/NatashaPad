@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using NatashaPad.MvvmServices.MessageBox;
+using NatashaPad.MvvmServices.Windows;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
 
@@ -52,15 +53,17 @@ namespace NatashaPad
             ConfigureServices(services);
             DependencyResolver.SetDependencyResolver(services);
 
-            Show(services.BuildServiceProvider());
+            ShowWindow(services.BuildServiceProvider());
         }
 
-        private void Show(IServiceProvider serviceProvider)
+        private void ShowWindow(IServiceProvider serviceProvider)
         {
-            var view = serviceProvider.GetRequiredService<MainWindow>();
             var vm = serviceProvider.GetRequiredService<MainViewModel>();
-            view.DataContext = vm;
-            view.Show();
+
+            var mgr = serviceProvider.GetRequiredService<IWindowManager>();
+            var windowService = mgr.GetWindowService(vm);
+
+            windowService.Show();
         }
     }
 }
