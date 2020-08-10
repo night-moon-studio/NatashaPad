@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
 
-namespace NatashaPad.ViewModels.Base
+namespace NatashaPad.MvvmBase
 {
     public class CollectionItem : BindableBase
     {
