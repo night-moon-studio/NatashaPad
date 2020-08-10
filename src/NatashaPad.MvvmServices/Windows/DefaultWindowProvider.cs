@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace NatashaPad.MvvmServices.Windows
 {
-    internal class DefaultWindowProvider : IWindowProvider
+    public class DefaultWindowProvider : IWindowProvider
     {
         public Window Create(object view, object viewModel)
         {
@@ -13,10 +13,10 @@ namespace NatashaPad.MvvmServices.Windows
             {
                 window = new Window();
                 window.Content = view;
+                window.SizeToContent = SizeToContent.WidthAndHeight;
             }
 
             window.DataContext = viewModel;
-            window.SizeToContent = SizeToContent.WidthAndHeight;
             return window;
 
             /* 
