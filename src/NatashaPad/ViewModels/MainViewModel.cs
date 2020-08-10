@@ -113,12 +113,13 @@ namespace NatashaPad.ViewModels
         /// <summary>
         /// 命名空间
         /// </summary>
-        private IEnumerable<string> _namespaces;
+        private IEnumerable<string> _namespaces = Enumerable.Empty<string>();
 
         public ICommand UsingManageCommand { get; }
         private void UsingManageShow()
         {
-            var vm = ShowDialog<UsingManageViewModel>();
+            var vm = new UsingManageViewModel(commonParam, _namespaces);
+            ShowDialog(vm);
             if (vm.Succeed)
             {
                 _namespaces = vm.AllItems.Select(x => x.Namespace)
