@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -107,10 +110,20 @@ namespace NatashaPad.ViewModels
             }
         }
 
+        /// <summary>
+        /// 命名空间
+        /// </summary>
+        private IEnumerable<string> _namespaces;
+
         public ICommand UsingManageCommand { get; }
         private void UsingManageShow()
         {
-            UsingManageViewModel vm = ShowDialog<UsingManageViewModel>();
+            var vm = ShowDialog<UsingManageViewModel>();
+            if (vm.Succeed)
+            {
+                _namespaces = vm.AllItems.Select(x => x.Namespace)
+                    .ToArray();
+            }
         }
         public ICommand RefManageCommand { get; }
     }
