@@ -30,12 +30,15 @@
                                   ItemsSource="{Binding AllItems}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="0 0 0 20">
+                                <Grid Margin="0 0 0 20"
+                                      Height="70">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBox Text="{Binding Namespace,UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                                             materialDesign:HintAssist.Hint="输入命名空间"
                                              Grid.Column="0" />
                                     <Button Style="{StaticResource MaterialDesignRaisedLightButton}"
                                             Width="50"
