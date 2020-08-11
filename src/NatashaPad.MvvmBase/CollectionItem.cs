@@ -38,5 +38,15 @@ namespace NatashaPad.MvvmBase
             base.RemoveItem(index);
             item.NeedDeleteMe -= Item_NeedDeleteMe;
         }
+
+        protected override void ClearItems()
+        {
+            foreach (var item in Items)
+            {
+                item.NeedDeleteMe -= Item_NeedDeleteMe;
+            }
+
+            base.ClearItems();
+        }
     }
 }
