@@ -31,5 +31,12 @@ namespace NatashaPad.MvvmBase
         {
             Remove((T)sender);
         }
+
+        protected override void RemoveItem(int index)
+        {
+            var item = this[index];
+            base.RemoveItem(index);
+            item.NeedDeleteMe -= Item_NeedDeleteMe;
+        }
     }
 }
