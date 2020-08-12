@@ -31,7 +31,7 @@ namespace NatashaPad.ViewModels.Base
 
         protected void ShowMessage(string message)
         {
-            Mediator.Publish(new MessageNotification(message));
+            GetService<IErrorMessageBoxService>().Show(message);
         }
 
         protected IWindowManager WindowManager => commonParam.WindowManager;
