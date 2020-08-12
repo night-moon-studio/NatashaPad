@@ -36,7 +36,7 @@ namespace NatashaPad
 
             services.AddTransient<CommonParam>();
 
-            services.AddMediatR(typeof(App), typeof(MessageNotification));
+            services.AddMediatR(typeof(App));
 
             services.AddSingleton(Dispatcher.CurrentDispatcher);
 
