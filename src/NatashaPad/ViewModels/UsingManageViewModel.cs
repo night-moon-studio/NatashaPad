@@ -16,6 +16,7 @@ using WeihanLi.Extensions;
 
 namespace NatashaPad.ViewModels
 {
+    //TODO: 添加时，1. 获取光标；2. 滚动到空处；3. 空处红框显示；
     internal class UsingManageViewModel : DialogViewModelBase
     {
         public UsingManageViewModel(CommonParam commonParam,
