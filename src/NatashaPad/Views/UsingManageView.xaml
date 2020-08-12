@@ -11,7 +11,11 @@
              d:DesignHeight="400"
              d:DesignWidth="500">
     <ContentControl Template="{StaticResource DialogWrapper}">
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right">
                 <Button Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}"
@@ -22,39 +26,36 @@
                 </Button>
             </StackPanel>
             <ScrollViewer VerticalScrollBarVisibility="Auto"
-                          Height="215"
+                          Grid.Row="1"
                           Margin="0 10 0 0">
-                <StackPanel Margin="0 0 10 0">
-                    <ItemsControl Margin="0 10 0 0"
-                                  MinHeight="200"
-                                  ItemsSource="{Binding AllItems}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0 0 0 20"
-                                      Height="70">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding Namespace,UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
-                                             materialDesign:HintAssist.Hint="输入命名空间"
-                                             Grid.Column="0" />
-                                    <Button Style="{StaticResource MaterialDesignRaisedLightButton}"
-                                            Width="50"
-                                            Margin="20 0 0 0"
-                                            Grid.Column="1"
-                                            Command="{Binding DeleteThisCommand}">
-                                        <materialDesign:PackIcon Kind="Minus"
-                                                                 Height="16"
-                                                                 Width="16" />
-                                    </Button>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
+                <ItemsControl Margin="0 10 10 0"
+                              ItemsSource="{Binding AllItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0 0 0 20"
+                                  Height="70">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding Namespace,UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                                         materialDesign:HintAssist.Hint="输入命名空间"
+                                         Grid.Column="0" />
+                                <Button Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                        Width="50"
+                                        Margin="20 0 0 0"
+                                        Grid.Column="1"
+                                        Command="{Binding DeleteThisCommand}">
+                                    <materialDesign:PackIcon Kind="Minus"
+                                                             Height="16"
+                                                             Width="16" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
-        </StackPanel>
+        </Grid>
     </ContentControl>
 </UserControl>
