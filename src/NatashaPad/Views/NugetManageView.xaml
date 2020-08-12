@@ -4,21 +4,57 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:NatashaPad.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
     <ContentControl Template="{StaticResource DialogWrapper}">
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBox />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Card Group Box"
+                      Style="{DynamicResource MaterialDesignCardGroupBox}">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <materialDesign:PackIcon Kind="CheckboxMarkedOutline"
+                                                     Height="20"
+                                                     Width="20"
+                                                     HorizontalAlignment="Right"
+                                                     VerticalAlignment="Center" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                       Text="已安装" />
+                        </Grid>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              Margin="0 10 0 0"></ScrollViewer>
+            </GroupBox>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                             materialDesign:HintAssist.Hint="搜索" />
+                    <Button Grid.Column="1"
+                            Style="{StaticResource MaterialDesignRaisedLightButton}"
+                            Margin="10 0 0 0">
+                        <materialDesign:PackIcon Kind="Magnify"
+                                                 Height="20"
+                                                 Width="20"
+                                                 Foreground="White" />
+                    </Button>
+                </Grid>
             </Grid>
         </Grid>
     </ContentControl>
