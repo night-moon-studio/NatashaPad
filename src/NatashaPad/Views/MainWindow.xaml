@@ -35,7 +35,7 @@
                     Margin="20,10,0,0"
                     MinWidth="50">Using 管理</Button>
             <Button Name="BtnReference"
-                    Command="{Binding RefManageCommand}"
+                    Command="{Binding NugetManageCommand}"
                     Margin="20,10,0,0"
                     MinWidth="50">引用管理</Button>
         </StackPanel>

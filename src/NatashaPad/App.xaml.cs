@@ -44,6 +44,7 @@ namespace NatashaPad
             {
                 options.Register<MainWindow, MainViewModel>();
                 options.Register<UsingManageView, UsingManageViewModel>();
+                options.Register<NugetManageView, NugetManageViewModel>();
             });
         }
 

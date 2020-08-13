@@ -34,6 +34,7 @@ namespace NatashaPad.ViewModels
 
             RunCommand = new DelegateCommand(async () => await RunAsync());
             UsingManageCommand = new DelegateCommand(UsingManageShow);
+            NugetManageCommand = new DelegateCommand(NugetManageShow);
         }
 
         private void Dump(string content)
@@ -126,6 +127,15 @@ namespace NatashaPad.ViewModels
                     .ToArray();
             }
         }
-        public ICommand RefManageCommand { get; }
+
+        public ICommand NugetManageCommand { get; }
+        private void NugetManageShow()
+        {
+            var vm = new NugetManageViewModel(commonParam);
+            ShowDialog(vm);
+            if (vm.Succeed)
+            {
+            }
+        }
     }
 }
