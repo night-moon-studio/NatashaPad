@@ -84,16 +84,16 @@
                               Margin="0 10 0 0"
                               Padding="0 0 15 0"
                               VerticalScrollBarVisibility="Auto">
-                    <ItemsControl>
+                    <ItemsControl ItemsSource="{Binding SearchedPackages}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Height="30">
+                                <Grid Height="40" Margin="0 0 0 10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="1"
                                               Margin="10 0"
                                               ItemsSource="{Binding Versions}"
