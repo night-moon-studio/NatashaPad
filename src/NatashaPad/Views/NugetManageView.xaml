@@ -69,7 +69,12 @@
                     </Grid.ColumnDefinitions>
                     <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
                              materialDesign:HintAssist.Hint="搜索"
-                             Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged}" />
+                             Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter"
+                                        Command="{Binding SearchCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
                     <Button Grid.Column="1"
                             Style="{StaticResource MaterialDesignRaisedLightButton}"
                             Margin="10 0 0 0"
