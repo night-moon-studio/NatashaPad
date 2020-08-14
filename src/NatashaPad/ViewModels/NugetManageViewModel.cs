@@ -55,7 +55,30 @@ namespace NatashaPad.ViewModels
             foreach (var name in packagesNames)
             {
                 var versions = await NugetHelper.GetPackageVersions(name, default);
-                SearchedPackages.Add(new Package(name, versions));
+                var pkg = new Package(name, versions);
+                pkg.InstallCommand = new DelegateCommand(
+                    () => InstallPackage(pkg),
+                    () => CanInstallPackage(pkg));
+
+                SearchedPackages.Add(pkg);
+
+                void InstallPackage(Package package)
+                {
+                    var old = InstalledPackages.Where(x => x.Name == package.Name).SingleOrDefault();
+                    if (old != default)
+                    {
+                        old.SelectedVersion = package.SelectedVersion;
+                    }
+                    else
+                    {
+                        InstalledPackages.Insert(0, package);
+                    }
+                }
+
+                bool CanInstallPackage(Package package)
+                {
+                    return package.SelectedVersion != default;
+                }
             }
         }
 
@@ -84,6 +107,18 @@ namespace NatashaPad.ViewModels
 
             public ICommand InstallCommand { get; internal set; }
             public ICommand UninstallCommand { get; internal set; }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Package package &&
+                       Name == package.Name &&
+                       EqualityComparer<VersionModel>.Default.Equals(SelectedVersion, package.SelectedVersion);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Name, SelectedVersion);
+            }
         }
 
         internal class VersionModel
@@ -97,6 +132,17 @@ namespace NatashaPad.ViewModels
 
             private string display;
             public string Display => display ??= Core.ToString();
+
+            public override bool Equals(object obj)
+            {
+                return obj is VersionModel model &&
+                       Display == model.Display;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Display);
+            }
         }
     }
 }
