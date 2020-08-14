@@ -21,8 +21,8 @@ namespace NatashaPad.ViewModels
     {
         public NugetManageViewModel(CommonParam commonParam) : base(commonParam)
         {
-            InstalledPackages = new ObservableCollection<Package>();
-            SearchedPackages = new ObservableCollection<Package>();
+            InstalledPackages = new ObservableCollection<SearchedPackage>();
+            SearchedPackages = new ObservableCollection<SearchedPackage>();
 
             SearchCommand = new DelegateCommand(async () => await SearchAsync());
         }
@@ -32,8 +32,8 @@ namespace NatashaPad.ViewModels
             return base.OkAsync();
         }
 
-        public ObservableCollection<Package> InstalledPackages { get; }
-        public ObservableCollection<Package> SearchedPackages { get; }
+        public ObservableCollection<SearchedPackage> InstalledPackages { get; }
+        public ObservableCollection<SearchedPackage> SearchedPackages { get; }
 
 
         private string searchText;
@@ -47,6 +47,9 @@ namespace NatashaPad.ViewModels
         private async Task SearchAsync()
         {
             var text = searchText;
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+            text = text.Trim();
 
             //TODO: 这边都给了默认值。需要在界面上支持用户选择
             var packagesNames = await NugetHelper.GetPackages(text, true, default);
@@ -55,46 +58,53 @@ namespace NatashaPad.ViewModels
             foreach (var name in packagesNames)
             {
                 var versions = await NugetHelper.GetPackageVersions(name, default);
-                var pkg = new Package(name, versions);
+                var pkg = new SearchedPackage(name, versions);
                 pkg.InstallCommand = new DelegateCommand(
                     () => InstallPackage(pkg),
                     () => CanInstallPackage(pkg));
 
                 SearchedPackages.Add(pkg);
 
-                void InstallPackage(Package package)
+                void InstallPackage(SearchedPackage package)
                 {
                     var old = InstalledPackages.Where(x => x.Name == package.Name).SingleOrDefault();
                     if (old != default)
                     {
-                        old.SelectedVersion = package.SelectedVersion;
+                        old.SelectedVersion = new VersionModel(package.SelectedVersion.Core);
                     }
                     else
                     {
-                        InstalledPackages.Insert(0, package);
+                        InstalledPackages.Insert(0, new SearchedPackage(package.Name,Enumerable.Empty<NuGetVersion>()));
                     }
                 }
 
-                bool CanInstallPackage(Package package)
+                bool CanInstallPackage(SearchedPackage package)
                 {
                     return package.SelectedVersion != default;
                 }
             }
         }
 
-        internal class Package : BindableBase
+        internal abstract class Package : BindableBase
         {
-            public Package(string name,
-                IEnumerable<NuGetVersion> versions)
+            public Package(string name)
             {
                 Name = name;
+            }
+
+            public string Name { get; }
+        }
+
+        internal class SearchedPackage : Package
+        {
+            public SearchedPackage(string name,
+                IEnumerable<NuGetVersion> versions):base(name)
+            {
                 Versions = versions.Reverse()
                     .Select(x => new VersionModel(x))
                     .ToArray();
                 selectedVersion = Versions.FirstOrDefault();
             }
-
-            public string Name { get; }
 
             public IEnumerable<VersionModel> Versions { get; }
 
@@ -110,7 +120,7 @@ namespace NatashaPad.ViewModels
 
             public override bool Equals(object obj)
             {
-                return obj is Package package &&
+                return obj is SearchedPackage package &&
                        Name == package.Name &&
                        EqualityComparer<VersionModel>.Default.Equals(SelectedVersion, package.SelectedVersion);
             }
