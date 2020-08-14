@@ -16,6 +16,7 @@ using Prism.Mvvm;
 
 namespace NatashaPad.ViewModels
 {
+    //TODO: 界面加载后即激活搜索框
     internal class NugetManageViewModel : DialogViewModelBase
     {
         public NugetManageViewModel(CommonParam commonParam) : base(commonParam)
