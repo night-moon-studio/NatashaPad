@@ -14,14 +14,19 @@ using NuGet.Versioning;
 
 using Prism.Commands;
 
+using WeihanLi.Extensions;
+
 namespace NatashaPad.ViewModels
 {
     //TODO: 界面加载后即激活搜索框
     internal partial class NugetManageViewModel : DialogViewModelBase
     {
-        public NugetManageViewModel(CommonParam commonParam) : base(commonParam)
+        public NugetManageViewModel(CommonParam commonParam,
+            IEnumerable<InstalledPackage> installedPackages) : base(commonParam)
         {
             InstalledPackages = new RemovableCollection<InstalledPackage>();
+            installedPackages.ForEach(x => InstalledPackages.Add(x));
+
             SearchedPackages = new ObservableCollection<SearchedPackage>();
 
             SearchCommand = new DelegateCommand(async () => await SearchAsync());
@@ -70,7 +75,7 @@ namespace NatashaPad.ViewModels
                     var old = InstalledPackages.Where(x => x.Name == package.Name).SingleOrDefault();
                     if (old != default)
                     {
-                        old.Version = new VersionModel(package.SelectedVersionCore);
+                        old.Version = new VersionModel(package.SelectedVersion);
                     }
                     else
                     {

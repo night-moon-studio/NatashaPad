@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels.Base;
 
 using Prism.Commands;
+
+using static NatashaPad.ViewModels.NugetManageViewModel;
 
 namespace NatashaPad.ViewModels
 {
@@ -128,13 +131,29 @@ namespace NatashaPad.ViewModels
             }
         }
 
+        private IEnumerable<NugetReferenceResolver> installedPackages = Enumerable.Empty<NugetReferenceResolver>();
+
         public ICommand NugetManageCommand { get; }
         private void NugetManageShow()
         {
-            var vm = new NugetManageViewModel(commonParam);
+            var vm = new NugetManageViewModel(commonParam, GetInstalledPackages());
             ShowDialog(vm);
             if (vm.Succeed)
             {
+                installedPackages = GetUpdatedResolvers();
+            }
+
+            IEnumerable<InstalledPackage> GetInstalledPackages()
+            {
+                return installedPackages.Select(x =>
+                    new InstalledPackage(x.PackageName, x.PackageVersion))
+                    .ToArray();
+            }
+
+            IEnumerable<NugetReferenceResolver> GetUpdatedResolvers()
+            {
+                return vm.InstalledPackages.Select(x => new NugetReferenceResolver(x.Name, x.Version.ToString()))
+                    .ToArray();
             }
         }
     }

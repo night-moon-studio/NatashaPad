@@ -40,8 +40,6 @@ namespace NatashaPad.ViewModels
                 set => SetProperty(ref selectedVersion, value);
             }
 
-            public NuGetVersion SelectedVersionCore => SelectedVersion.Core;
-
             public ICommand InstallCommand { get; internal set; }
 
             public override bool Equals(object obj)
@@ -62,14 +60,21 @@ namespace NatashaPad.ViewModels
             public string Name { get; }
 
             public InstalledPackage(string name,
-                NuGetVersion version)
+                string version)
+            {
+                Name = name;
+                Version = new VersionModel(version);
+            }
+
+            public InstalledPackage(string name,
+                VersionModel version)
             {
                 Name = name;
                 Version = new VersionModel(version);
             }
 
             public InstalledPackage(SearchedPackage searchedPackage)
-                : this(searchedPackage.Name, searchedPackage.SelectedVersionCore)
+                : this(searchedPackage.Name, searchedPackage.SelectedVersion)
             { }
 
             private VersionModel version;
@@ -86,13 +91,21 @@ namespace NatashaPad.ViewModels
         {
             public VersionModel(NuGetVersion version)
             {
-                Core = version;
+                InternalVersion = version;
             }
 
-            public NuGetVersion Core { get; }
+            public VersionModel(string version):this(new NuGetVersion(version))
+            {
+            }
+
+            public VersionModel(VersionModel version) : this(version.InternalVersion)
+            {
+            }
+
+            public NuGetVersion InternalVersion { get; }
 
             private string display;
-            public string Display => display ??= Core.ToString();
+            public string Display => display ??= ToString();
 
             public override bool Equals(object obj)
             {
@@ -103,6 +116,11 @@ namespace NatashaPad.ViewModels
             public override int GetHashCode()
             {
                 return HashCode.Combine(Display);
+            }
+
+            public override string ToString()
+            {
+                return InternalVersion.ToString();
             }
         }
     }
