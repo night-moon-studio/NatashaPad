@@ -48,7 +48,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{Binding Name}"
                                                VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding SelectedVersion.Display}"
+                                    <TextBlock Text="{Binding Version.Display}"
                                                Grid.Column="1"
                                                VerticalAlignment="Center"
                                                Margin="10 0" />

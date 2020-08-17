@@ -6,22 +6,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using NatashaPad.MvvmBase;
 using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels.Base;
 
 using NuGet.Versioning;
 
 using Prism.Commands;
-using Prism.Mvvm;
 
 namespace NatashaPad.ViewModels
 {
     //TODO: 界面加载后即激活搜索框
-    internal class NugetManageViewModel : DialogViewModelBase
+    internal partial class NugetManageViewModel : DialogViewModelBase
     {
         public NugetManageViewModel(CommonParam commonParam) : base(commonParam)
         {
-            InstalledPackages = new ObservableCollection<SearchedPackage>();
+            InstalledPackages = new RemovableCollection<InstalledPackage>();
             SearchedPackages = new ObservableCollection<SearchedPackage>();
 
             SearchCommand = new DelegateCommand(async () => await SearchAsync());
@@ -32,7 +32,7 @@ namespace NatashaPad.ViewModels
             return base.OkAsync();
         }
 
-        public ObservableCollection<SearchedPackage> InstalledPackages { get; }
+        public ObservableCollection<InstalledPackage> InstalledPackages { get; }
         public ObservableCollection<SearchedPackage> SearchedPackages { get; }
 
 
@@ -70,11 +70,11 @@ namespace NatashaPad.ViewModels
                     var old = InstalledPackages.Where(x => x.Name == package.Name).SingleOrDefault();
                     if (old != default)
                     {
-                        old.SelectedVersion = new VersionModel(package.SelectedVersion.Core);
+                        old.Version = new VersionModel(package.SelectedVersionCore);
                     }
                     else
                     {
-                        InstalledPackages.Insert(0, new SearchedPackage(package.Name,Enumerable.Empty<NuGetVersion>()));
+                        InstalledPackages.Insert(0, new InstalledPackage(package));
                     }
                 }
 
@@ -82,76 +82,6 @@ namespace NatashaPad.ViewModels
                 {
                     return package.SelectedVersion != default;
                 }
-            }
-        }
-
-        internal abstract class Package : BindableBase
-        {
-            public Package(string name)
-            {
-                Name = name;
-            }
-
-            public string Name { get; }
-        }
-
-        internal class SearchedPackage : Package
-        {
-            public SearchedPackage(string name,
-                IEnumerable<NuGetVersion> versions):base(name)
-            {
-                Versions = versions.Reverse()
-                    .Select(x => new VersionModel(x))
-                    .ToArray();
-                selectedVersion = Versions.FirstOrDefault();
-            }
-
-            public IEnumerable<VersionModel> Versions { get; }
-
-            private VersionModel selectedVersion;
-            public VersionModel SelectedVersion
-            {
-                get => selectedVersion;
-                set => SetProperty(ref selectedVersion, value);
-            }
-
-            public ICommand InstallCommand { get; internal set; }
-            public ICommand UninstallCommand { get; internal set; }
-
-            public override bool Equals(object obj)
-            {
-                return obj is SearchedPackage package &&
-                       Name == package.Name &&
-                       EqualityComparer<VersionModel>.Default.Equals(SelectedVersion, package.SelectedVersion);
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(Name, SelectedVersion);
-            }
-        }
-
-        internal class VersionModel
-        {
-            public VersionModel(NuGetVersion version)
-            {
-                Core = version;
-            }
-
-            public NuGetVersion Core { get; }
-
-            private string display;
-            public string Display => display ??= Core.ToString();
-
-            public override bool Equals(object obj)
-            {
-                return obj is VersionModel model &&
-                       Display == model.Display;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(Display);
             }
         }
     }
