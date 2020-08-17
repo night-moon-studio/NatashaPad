@@ -11,6 +11,7 @@
                                              SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="Themes/DialogStyles.xaml" />
+                <ResourceDictionary Source="Themes/Common.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
