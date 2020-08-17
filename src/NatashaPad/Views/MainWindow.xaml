@@ -35,20 +35,22 @@
                     Margin="20,10,0,0"
                     MinWidth="50">Using 管理</Button>
             <Button Name="BtnReference"
-                    Command="{Binding RefManageCommand}"
+                    Command="{Binding NugetManageCommand}"
                     Margin="20,10,0,0"
                     MinWidth="50">引用管理</Button>
         </StackPanel>
-        <TextBox Name="txtInput"
-                 Grid.Row="1"
+        <TextBox Grid.Row="1"
                  AcceptsReturn="True"
+                 Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                 materialDesign:HintAssist.Hint="输入源代码"
                  VerticalContentAlignment="Top"
                  Text="{Binding Input,UpdateSourceTrigger=PropertyChanged}"
                  TextWrapping="Wrap"
                  Margin="10,10,10,0"
                  VerticalScrollBarVisibility="Auto" />
-        <TextBox Name="txtOutput"
-                 Grid.Row="2"
+        <TextBox Grid.Row="2"
+                 Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                 materialDesign:HintAssist.Hint="计算结果"
                  Text="{Binding Output,UpdateSourceTrigger=PropertyChanged}"
                  AcceptsReturn="True"
                  VerticalContentAlignment="Top"

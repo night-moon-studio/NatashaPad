@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using NatashaPad.MvvmServices;
+using NatashaPad.MvvmServices.MessageBox;
 using NatashaPad.MvvmServices.Windows;
 
 using System;
@@ -33,6 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IViewInstanceLocator, DefaultViewLocator>();
 
             services.TryAddSingleton<IWindowProvider, DefaultWindowProvider>();
+
+            services.TryAddTransient<IErrorMessageBoxService, DefaultErrorMessageBoxService>();
         }
     }
 }

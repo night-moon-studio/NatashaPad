@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-using MediatR;
-
 namespace NatashaPad.MvvmServices.Windows
 {
     internal class DefaultWindowManager : IWindowManager
