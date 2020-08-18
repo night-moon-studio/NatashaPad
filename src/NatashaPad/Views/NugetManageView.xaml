@@ -49,7 +49,7 @@
                                     <TextBlock Text="{Binding Name}"
                                                VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding Version.Display}"
+                                    <TextBlock Text="{Binding Version}"
                                                Grid.Column="1"
                                                TextTrimming="CharacterEllipsis"
                                                VerticalAlignment="Center"
@@ -110,8 +110,7 @@
                                     <ComboBox Grid.Column="1"
                                               Margin="10 0"
                                               ItemsSource="{Binding Versions}"
-                                              SelectedItem="{Binding SelectedVersion}"
-                                              DisplayMemberPath="Display" />
+                                              SelectedItem="{Binding SelectedVersion}" />
                                     <Button Grid.Column="2"
                                             Content="安装"
                                             Command="{Binding InstallCommand}" />

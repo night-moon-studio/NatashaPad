@@ -63,7 +63,8 @@ namespace NatashaPad.ViewModels
             foreach (var name in packagesNames)
             {
                 var versions = await NugetHelper.GetPackageVersions(name, default);
-                var pkg = new SearchedPackage(name, versions);
+                var pkg = new SearchedPackage(name,
+                    versions.Select(x => x.ToString()).ToArray());
                 pkg.InstallCommand = new DelegateCommand(
                     () => InstallPackage(pkg),
                     () => CanInstallPackage(pkg));
@@ -75,7 +76,7 @@ namespace NatashaPad.ViewModels
                     var old = InstalledPackages.Where(x => x.Name == package.Name).SingleOrDefault();
                     if (old != default)
                     {
-                        old.Version = new VersionModel(package.SelectedVersion);
+                        old.Version = package.SelectedVersion;
                     }
                     else
                     {
