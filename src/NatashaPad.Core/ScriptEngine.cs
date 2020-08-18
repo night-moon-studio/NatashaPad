@@ -2,8 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Natasha;
-using Natasha.CSharp;
 using Natasha.Framework;
 using System;
 using System.Linq;
@@ -25,9 +23,7 @@ namespace NatashaPad
     {
         static CSharpScriptEngine()
         {
-            NatashaComponentRegister.RegistDomain<NatashaAssemblyDomain>();
-            NatashaComponentRegister.RegistCompiler<NatashaCSharpCompiler>();
-            NatashaComponentRegister.RegistSyntax<NatashaCSharpSyntax>();
+            NatashaInitializer.Initialize();
         }
 
         public async Task Execute(string code, NScriptOptions scriptOptions)
@@ -91,7 +87,7 @@ public static void Main() => MainAsync(null).Wait();
             assBuilder.Add(code, scriptOptions.UsingList);
 
             // add reference
-            if (scriptOptions.ReferenceResolvers != null && scriptOptions.ReferenceResolvers.Count > 0)
+            if (scriptOptions.ReferenceResolvers.Count > 0)
             {
                 var references = await scriptOptions.ReferenceResolvers
                     .Select(r => r.Resolve())
@@ -112,9 +108,11 @@ public static void Main() => MainAsync(null).Wait();
 
             var assembly = assBuilder.GetAssembly();
 
-            using(var capture = await ConsoleOutput.Capture())
+            using (var capture = await ConsoleOutput.CaptureAsync())
             {
-                var entryPoint = assembly.GetType("Program")?.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                var entryPoint = assembly.EntryPoint
+                    ?? assembly.GetType("Program")?.GetMethod("Main",
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
                 if (null != entryPoint)
                 {
                     entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
@@ -123,30 +121,30 @@ public static void Main() => MainAsync(null).Wait();
                 {
                     throw new ArgumentException("can not find entry point");
                 }
-                if(!string.IsNullOrEmpty(capture.StandardOutput))
+                if (!string.IsNullOrEmpty(capture.StandardOutput))
                 {
                     DumpOutHelper.OutputAction?.Invoke(capture.StandardOutput);
                 }
             }
-            
-            //using (var executor = new DotNetExecutor(assembly.Location, _outputHelper))
-            //{
-            //    await executor.ExecuteAsync();
-            //}
         }
 
         public async Task<object> Eval(string code, NScriptOptions scriptOptions)
         {
+            var originalReferences = new[]
+            {
+                typeof(object).Assembly,
+                typeof(Enumerable).Assembly,
+                typeof(IDumper).Assembly,
+                Assembly.Load("netstandard"),
+                Assembly.Load("System.Runtime"),
+            };
             // https://github.com/dotnet/roslyn/issues/34111
             var defaultReferences =
-                new[]
-                    {
-                        typeof(object).Assembly,
-                        typeof(Enumerable).Assembly,
-                        typeof(IDumper).Assembly,
-                        Assembly.Load("netstandard"),
-                        Assembly.Load("System.Runtime"),
-                    }
+                    originalReferences
+                    .SelectMany(ass => ass.GetReferencedAssemblies())
+                    .Distinct()
+                    .Select(Assembly.Load)
+                    .Union(originalReferences)
                     .Select(assembly => assembly.Location)
                     .Distinct()
                     .Select(l => MetadataReference.CreateFromFile(l))
