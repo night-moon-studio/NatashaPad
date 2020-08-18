@@ -84,7 +84,13 @@ namespace NatashaPad.ViewModels
                 return;
             }
             Output = string.Empty;
-
+            if (_namespaces != null && _namespaces.Count > 0)
+            {
+                foreach (var ns in _namespaces)
+                {
+                    _scriptOptions.UsingList.Add(ns);
+                }
+            }
             if (_installedPackages != null && _installedPackages.Count > 0)
             {
                 foreach (var package in _installedPackages)

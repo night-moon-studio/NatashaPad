@@ -130,16 +130,21 @@ public static void Main() => MainAsync(null).Wait();
 
         public async Task<object> Eval(string code, NScriptOptions scriptOptions)
         {
+            var originalReferences = new[]
+            {
+                typeof(object).Assembly,
+                typeof(Enumerable).Assembly,
+                typeof(IDumper).Assembly,
+                Assembly.Load("netstandard"),
+                Assembly.Load("System.Runtime"),
+            };
             // https://github.com/dotnet/roslyn/issues/34111
             var defaultReferences =
-                new[]
-                    {
-                        typeof(object).Assembly,
-                        typeof(Enumerable).Assembly,
-                        typeof(IDumper).Assembly,
-                        Assembly.Load("netstandard"),
-                        Assembly.Load("System.Runtime"),
-                    }
+                    originalReferences
+                    .SelectMany(ass => ass.GetReferencedAssemblies())
+                    .Distinct()
+                    .Select(Assembly.Load)
+                    .Union(originalReferences)
                     .Select(assembly => assembly.Location)
                     .Distinct()
                     .Select(l => MetadataReference.CreateFromFile(l))
