@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using NatashaPad.ReferenceResolver.Nuget;
+using NatashaPad.ViewModels.Base;
+using Prism.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-
-using NatashaPad.ReferenceResolver.Nuget;
-using NatashaPad.ViewModels.Base;
-
-using Prism.Commands;
-
 using static NatashaPad.ViewModels.NugetManageViewModel;
 
 namespace NatashaPad.ViewModels
@@ -29,6 +25,9 @@ namespace NatashaPad.ViewModels
             _dumperResolver = dumperResolver;
             _scriptEngine = scriptEngine;
             _scriptOptions = scriptOptions;
+
+            _namespaces = _scriptOptions.UsingList;
+            _installedPackages = Array.Empty<NugetReferenceResolver>();
 
             _input = "\"Hello NatashaPad\"";
 
@@ -60,6 +59,7 @@ namespace NatashaPad.ViewModels
         }
 
         private string _input;
+
         public string Input
         {
             get => _input;
@@ -67,6 +67,7 @@ namespace NatashaPad.ViewModels
         }
 
         private string _output;
+
         public string Output
         {
             get => _output;
@@ -74,6 +75,7 @@ namespace NatashaPad.ViewModels
         }
 
         public ICommand RunCommand { get; }
+
         private async Task RunAsync()
         {
             string input = _input?.Trim();
@@ -83,6 +85,13 @@ namespace NatashaPad.ViewModels
             }
             Output = string.Empty;
 
+            if (_installedPackages != null && _installedPackages.Count > 0)
+            {
+                foreach (var package in _installedPackages)
+                {
+                    _scriptOptions.ReferenceResolvers.Add(new NugetReferenceResolver(package.PackageName, package.PackageVersion));
+                }
+            }
             try
             {
                 if (input.Contains("static void Main(") || input.EndsWith(";"))
@@ -116,40 +125,43 @@ namespace NatashaPad.ViewModels
         /// <summary>
         /// 命名空间
         /// </summary>
-        private IEnumerable<string> _namespaces = Enumerable.Empty<string>();
+        private ICollection<string> _namespaces;
 
         public ICommand UsingManageCommand { get; }
+
         private void UsingManageShow()
         {
             var vm = new UsingManageViewModel(commonParam, _namespaces);
             ShowDialog(vm);
             if (vm.Succeed)
             {
-                _namespaces = vm.AllItems.Select(x => x.Namespace)
+                _namespaces = vm.AllItems
+                    .Select(x => x.Namespace)
                     .ToArray();
             }
         }
 
-        private IEnumerable<NugetReferenceResolver> installedPackages = Enumerable.Empty<NugetReferenceResolver>();
+        private ICollection<NugetReferenceResolver> _installedPackages;
 
         public ICommand NugetManageCommand { get; }
+
         private void NugetManageShow()
         {
             var vm = new NugetManageViewModel(commonParam, GetInstalledPackages());
             ShowDialog(vm);
             if (vm.Succeed)
             {
-                installedPackages = GetUpdatedResolvers();
+                _installedPackages = GetUpdatedResolvers();
             }
 
-            IEnumerable<InstalledPackage> GetInstalledPackages()
+            ICollection<InstalledPackage> GetInstalledPackages()
             {
-                return installedPackages.Select(x =>
+                return _installedPackages.Select(x =>
                     new InstalledPackage(x.PackageName, x.PackageVersion))
                     .ToArray();
             }
 
-            IEnumerable<NugetReferenceResolver> GetUpdatedResolvers()
+            ICollection<NugetReferenceResolver> GetUpdatedResolvers()
             {
                 return vm.InstalledPackages.Select(x => new NugetReferenceResolver(x.Name, x.Version.ToString()))
                     .ToArray();
