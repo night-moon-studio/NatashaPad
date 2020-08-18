@@ -31,7 +31,6 @@ namespace NatashaPad.ViewModels
             _scriptOptions = scriptOptions;
 
             _input = "\"Hello NatashaPad\"";
-            _output = "Output";
 
             DumpOutHelper.OutputAction += Dump;
 

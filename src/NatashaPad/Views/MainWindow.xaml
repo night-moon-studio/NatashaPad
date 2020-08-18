@@ -16,46 +16,62 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="2*"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <Button Name="BtnRun"
-                    Content="Run"
+    <DockPanel>
+        <materialDesign:ColorZone Mode="PrimaryDark"
+                                  Padding="16"
+                                  CornerRadius="5"
+                                  DockPanel.Dock="Top">
+            <DockPanel>
+                <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}"
+                              DockPanel.Dock="Left" />
+                <materialDesign:PopupBox DockPanel.Dock="Right"
+                                         PlacementMode="BottomAndAlignRightEdges">
+                    <StackPanel>
+                        <Button Name="BtnUsing"
+                                Command="{Binding UsingManageCommand}"
+                                MinWidth="50">Using 管理</Button>
+                        <Button Name="BtnReference"
+                                Command="{Binding NugetManageCommand}"
+                                Margin="0 10 0 0"
+                                MinWidth="50">引用管理</Button>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+                <TextBlock VerticalAlignment="Center"
+                           Margin="16 0 0 0"
+                           FontSize="20"
+                           FontWeight="Light"
+                           Text="Natasha Pad" />
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBox AcceptsReturn="True"
+                     Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                     materialDesign:HintAssist.Hint="输入源代码"
+                     VerticalContentAlignment="Top"
+                     Text="{Binding Input,UpdateSourceTrigger=PropertyChanged}"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" />
+            <Button Grid.Row="1"
+                    Name="BtnRun"
+                    Content="运行"
                     Command="{Binding RunCommand}"
-                    TabIndex="0"
-                    HorizontalAlignment="Left"
-                    Margin="20,10,0,0"
-                    MinWidth="50" />
-            <Button Name="BtnUsing"
-                    Command="{Binding UsingManageCommand}"
-                    Margin="20,10,0,0"
-                    MinWidth="50">Using 管理</Button>
-            <Button Name="BtnReference"
-                    Command="{Binding NugetManageCommand}"
-                    Margin="20,10,0,0"
-                    MinWidth="50">引用管理</Button>
-        </StackPanel>
-        <TextBox Grid.Row="1"
-                 AcceptsReturn="True"
-                 Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
-                 materialDesign:HintAssist.Hint="输入源代码"
-                 VerticalContentAlignment="Top"
-                 Text="{Binding Input,UpdateSourceTrigger=PropertyChanged}"
-                 TextWrapping="Wrap"
-                 Margin="10,10,10,0"
-                 VerticalScrollBarVisibility="Auto" />
-        <TextBox Grid.Row="2"
-                 Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
-                 materialDesign:HintAssist.Hint="计算结果"
-                 Text="{Binding Output,UpdateSourceTrigger=PropertyChanged}"
-                 AcceptsReturn="True"
-                 VerticalContentAlignment="Top"
-                 VerticalScrollBarVisibility="Auto"
-                 Margin="10,10,10,10"
-                 TextWrapping="Wrap" />
-    </Grid>
+                    HorizontalAlignment="Right"
+                    Margin="0 10 0 0"
+                    Width="80" />
+            <TextBox Grid.Row="2"
+                     Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                     materialDesign:HintAssist.Hint="计算结果"
+                     Text="{Binding Output,UpdateSourceTrigger=PropertyChanged}"
+                     AcceptsReturn="True"
+                     VerticalContentAlignment="Top"
+                     VerticalScrollBarVisibility="Auto"
+                     Margin="0 10 0 0"
+                     TextWrapping="Wrap" />
+        </Grid>
+    </DockPanel>
 </Window>
