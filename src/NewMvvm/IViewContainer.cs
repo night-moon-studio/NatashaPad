@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NatashaPad.MvvmServices
+namespace NewMvvm
 {
     public interface IViewContainer
     {

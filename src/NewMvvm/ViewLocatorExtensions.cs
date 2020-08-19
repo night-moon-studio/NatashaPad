@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using NatashaPad.MvvmServices;
-using NatashaPad.MvvmServices.MessageBox;
-using NatashaPad.MvvmServices.Windows;
+using NewMvvm;
+using NewMvvm.MessageBox;
+using NewMvvm.Windows;
 
 using System;
 using System.Collections.Generic;

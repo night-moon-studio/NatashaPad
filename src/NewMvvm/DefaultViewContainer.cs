@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NatashaPad.MvvmServices
+namespace NewMvvm
 {
     internal class DefaultViewContainer : IViewContainer, IViewLocator
     {

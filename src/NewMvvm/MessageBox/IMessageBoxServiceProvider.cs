@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NatashaPad.MvvmServices.MessageBox
+namespace NewMvvm.MessageBox
 {
     public interface IInfoMessageBoxService
     {

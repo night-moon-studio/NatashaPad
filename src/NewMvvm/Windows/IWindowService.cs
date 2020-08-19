@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NatashaPad.MvvmServices.Windows
+namespace NewMvvm.Windows
 {
     public interface IWindowManager
     {

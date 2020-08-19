@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace NatashaPad.MvvmServices
+namespace NewMvvm
 {
     public class ViewContainerOptions : Collection<Tuple<Type, Type>>
     {

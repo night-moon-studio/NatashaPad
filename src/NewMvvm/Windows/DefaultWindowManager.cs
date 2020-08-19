@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace NatashaPad.MvvmServices.Windows
+namespace NewMvvm.Windows
 {
     internal class DefaultWindowManager : IWindowManager
     {

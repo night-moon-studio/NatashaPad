@@ -3,8 +3,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using NatashaPad.MvvmServices.MessageBox;
-using NatashaPad.MvvmServices.Windows;
+using NewMvvm.MessageBox;
+using NewMvvm.Windows;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
 

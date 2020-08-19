@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NatashaPad.Core\NatashaPad.Core.csproj" />
     <ProjectReference Include="..\NatashaPad.MvvmBase\NatashaPad.MvvmBase.csproj" />
-    <ProjectReference Include="..\NatashaPad.MvvmServices\NatashaPad.MvvmServices.csproj" />
+    <ProjectReference Include="..\NewMvvm\NewMvvm.csproj" />
     <ProjectReference Include="..\NatashaPad.ReferenceResolver.Nuget\NatashaPad.ReferenceResolver.Nuget.csproj" />
   </ItemGroup>
 
