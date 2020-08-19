@@ -7,21 +7,21 @@ namespace NewMvvm
 {
     internal class DefaultViewContainer : IViewContainer, IViewLocator
     {
-        private readonly Dictionary<Type, Type> map;
+        private readonly Dictionary<Type, RegisterInfo> map;
 
         public DefaultViewContainer()
         {
-            map = new Dictionary<Type, Type>();
+            map = new Dictionary<Type, RegisterInfo>();
         }
 
-        internal DefaultViewContainer(IEnumerable<Tuple<Type, Type>> tuples)
+        internal DefaultViewContainer(IEnumerable<RegisterInfo> tuples)
         {
-            map = tuples.ToDictionary(x => x.Item2, x => x.Item1);
+            map = tuples.ToDictionary(x => x.ViewModelType, x => x);
         }
 
         public Type GetView(Type vmType)
         {
-            if (!map.TryGetValue(vmType, out Type viewType))
+            if (!map.TryGetValue(vmType, out var info))
             {
                 throw new KeyNotFoundException(
                     string.Format(Properties.Resource.CannotFindMatchedViewTypeOfFormatString,

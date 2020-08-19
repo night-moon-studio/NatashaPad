@@ -21,8 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             foreach (var item in options)
             {
-                services.AddTransient(item.Item1);
-                services.AddTransient(item.Item2);
+                services.AddTransient(item.ViewType);
+                services.AddTransient(item.ViewModelType);
             }
 
             services.TryAddSingleton(new DefaultViewContainer(options));
