@@ -29,11 +29,18 @@ namespace NewMvvm
 
     public sealed class RegisterInfo
     {
-        public RegisterInfo(Type viewType, Type viewModelType)
+        public RegisterInfo(Type viewType, Type viewModelType, string name)
         {
             ViewType = viewType;
             ViewModelType = viewModelType;
+            Name = name;
         }
+
+        public RegisterInfo(Type viewType, Type viewModelType) : this(viewType, viewModelType, string.Empty)
+        {
+        }
+
+        public string Name { get; }
 
         public Type ViewType { get; }
         public Type ViewModelType { get; }
