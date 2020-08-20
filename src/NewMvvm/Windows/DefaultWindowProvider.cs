@@ -7,8 +7,17 @@ namespace NewMvvm.Windows
 {
     public class DefaultWindowProvider : IWindowProvider
     {
+        private readonly IViewTypeInfoLocator viewTypeInfoLocator;
+
+        public DefaultWindowProvider(IViewTypeInfoLocator viewTypeInfoLocator)
+        {
+            this.viewTypeInfoLocator = viewTypeInfoLocator;
+        }
+
         public Window Create(object view, object viewModel)
         {
+            var viewInfo = viewTypeInfoLocator.GetViewInfo(view.GetType());
+
             if (!(view is Window window))
             {
                 window = new Window();
