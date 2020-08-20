@@ -2,7 +2,7 @@
 
 namespace NewMvvm
 {
-    internal interface IViewTypeInfoLocator
+    public interface IViewTypeInfoLocator
     {
         Type GetView(Type viewModelType);
 
