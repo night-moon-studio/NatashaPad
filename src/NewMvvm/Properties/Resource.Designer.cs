@@ -61,6 +61,15 @@ namespace NewMvvm.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 找不到 {0} 匹配的 视图信息！.
+        /// </summary>
+        internal static string CannotFindMatchedViewInfoOfFormatString {
+            get {
+                return ResourceManager.GetString("CannotFindMatchedViewInfoOfFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 找不到 {0} 匹配的 视图类型！.
         /// </summary>
         internal static string CannotFindMatchedViewTypeOfFormatString {
