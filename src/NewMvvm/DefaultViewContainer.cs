@@ -5,59 +5,64 @@ using System.Linq;
 
 namespace NewMvvm
 {
-    internal class DefaultViewContainer : IViewContainer, IViewLocator
+    internal class DefaultViewContainer : IViewTypeInfoLocator
     {
-        private readonly Dictionary<Type, RegisterInfo> map;
+        private readonly Dictionary<Type, Type> vmToviewMap;
+        private readonly Dictionary<Type, ViewInfo> viewToInfoMap;
 
         public DefaultViewContainer()
         {
-            map = new Dictionary<Type, RegisterInfo>();
+            vmToviewMap = new Dictionary<Type, Type>();
+            viewToInfoMap = new Dictionary<Type, ViewInfo>();
         }
 
-        internal DefaultViewContainer(IEnumerable<RegisterInfo> tuples)
+        internal DefaultViewContainer(IEnumerable<RegisterInfo> infos)
         {
-            map = tuples.ToDictionary(x => x.ViewModelType, x => x);
+            vmToviewMap = infos.ToDictionary(x => x.ViewModelType, x => x.ViewType);
+            viewToInfoMap = infos.ToDictionary(x => x.ViewType, x => x.ViewInfo);
         }
 
         public Type GetView(Type vmType)
         {
-            if (!map.TryGetValue(vmType, out var info))
+            if (!vmToviewMap.TryGetValue(vmType, out var type))
             {
                 throw new KeyNotFoundException(
                     string.Format(Properties.Resource.CannotFindMatchedViewTypeOfFormatString,
                     vmType.Name));
             }
 
-            return viewType;
+            return type;
         }
 
-        public void Register<TView, TViewModel>() where TView : class
+        public ViewInfo GetViewInfo(Type viewType)
         {
-            Register(typeof(TViewModel), typeof(TView));
-        }
+            if (!viewToInfoMap.TryGetValue(viewType, out var info))
+            {
+                throw new KeyNotFoundException(
+                    string.Format(Properties.Resource.CannotFindMatchedViewInfoOfFormatString,
+                    viewType.Name));
+            }
 
-        private void Register(Type viewModelType, Type viewType)
-        {
-            map[viewModelType] = viewType;
+            return info;
         }
     }
 
     internal class DefaultViewLocator : IViewInstanceLocator
     {
-        private readonly IViewLocator viewLocator;
+        private readonly IViewTypeInfoLocator viewLocator;
         private readonly IServiceProvider serviceProvider;
 
         public DefaultViewLocator(
-            IViewLocator viewLocator,
+            IViewTypeInfoLocator viewLocator,
             IServiceProvider serviceProvider)
         {
             this.viewLocator = viewLocator;
             this.serviceProvider = serviceProvider;
         }
 
-        public object GetView(Type type)
+        public object GetView(Type viewModelType)
         {
-            return serviceProvider.GetService(viewLocator.GetView(type));
+            return serviceProvider.GetService(viewLocator.GetView(viewModelType));
         }
     }
 }

@@ -2,14 +2,11 @@
 
 namespace NewMvvm
 {
-    public interface IViewContainer
-    {
-        void Register<TView, TViewModel>() where TView : class;
-    }
-
-    internal interface IViewLocator
+    internal interface IViewTypeInfoLocator
     {
         Type GetView(Type viewModelType);
+
+        ViewInfo GetViewInfo(Type viewType);
     }
 
     public interface IViewInstanceLocator
