@@ -43,8 +43,20 @@ namespace NatashaPad
             services.UsingViewLocator(options =>
             {
                 options.Register<MainWindow, MainViewModel>();
-                options.Register<UsingManageView, UsingManageViewModel>();
-                options.Register<NugetManageView, NugetManageViewModel>();
+                options.Register<UsingManageView, UsingManageViewModel>(opt =>
+                {
+                    opt.Width = 600;
+                    opt.Height = 400;
+                    opt.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    opt.Title = "Using管理";
+                });
+                options.Register<NugetManageView, NugetManageViewModel>(opt =>
+                {
+                    opt.Width = 800;
+                    opt.Height = 450;
+                    opt.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    opt.Title = "引用管理";
+                });
             });
         }
 

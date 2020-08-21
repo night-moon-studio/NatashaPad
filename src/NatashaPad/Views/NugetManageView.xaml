@@ -6,8 +6,6 @@
              xmlns:local="clr-namespace:NatashaPad.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             Height="450"
-             Width="800"
              d:DesignHeight="450"
              d:DesignWidth="800">
     <ContentControl Template="{StaticResource DialogWrapper}">
