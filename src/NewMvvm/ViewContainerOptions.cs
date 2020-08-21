@@ -55,6 +55,8 @@ namespace NewMvvm
 
         public string Title { get; set; }
 
-        public WindowStartupLocation WindowStartupLocation { get; set; }
+        public WindowStartupLocation WindowStartupLocation { get; set; } = WindowStartupLocation.Manual;
+
+        public SizeToContent? SizeToContent { get; set; }
     }
 }

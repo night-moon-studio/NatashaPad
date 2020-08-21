@@ -22,7 +22,27 @@ namespace NewMvvm.Windows
             {
                 window = new Window();
                 window.Content = view;
-                window.SizeToContent = SizeToContent.WidthAndHeight;
+
+                if (viewInfo != default)
+                {
+                    if (viewInfo.Width.HasValue)
+                    {
+                        window.Width = viewInfo.Width.Value;
+                    }
+
+                    if (viewInfo.Height.HasValue)
+                    {
+                        window.Height = viewInfo.Height.Value;
+                    }
+
+                    if (viewInfo.SizeToContent.HasValue)
+                    {
+                        window.SizeToContent = viewInfo.SizeToContent.Value;
+                    }
+
+                    window.WindowStartupLocation = viewInfo.WindowStartupLocation;
+                    window.Title = viewInfo.Title;
+                }
             }
 
             window.DataContext = viewModel;
