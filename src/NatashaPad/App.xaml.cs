@@ -3,8 +3,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using NatashaPad.MvvmServices.MessageBox;
-using NatashaPad.MvvmServices.Windows;
+using NewMvvm.MessageBox;
+using NewMvvm.Windows;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
 
@@ -43,8 +43,20 @@ namespace NatashaPad
             services.UsingViewLocator(options =>
             {
                 options.Register<MainWindow, MainViewModel>();
-                options.Register<UsingManageView, UsingManageViewModel>();
-                options.Register<NugetManageView, NugetManageViewModel>();
+                options.Register<UsingManageView, UsingManageViewModel>(opt =>
+                {
+                    opt.Width = 600;
+                    opt.Height = 400;
+                    opt.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    opt.Title = NatashaPad.Properties.Resource.UsingManageTitleString;
+                });
+                options.Register<NugetManageView, NugetManageViewModel>(opt =>
+                {
+                    opt.Width = 800;
+                    opt.Height = 450;
+                    opt.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    opt.Title = NatashaPad.Properties.Resource.NugetManageTitleString;
+                });
             });
         }
 

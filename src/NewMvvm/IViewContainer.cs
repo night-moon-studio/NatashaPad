@@ -1,15 +1,12 @@
 ﻿using System;
 
-namespace NatashaPad.MvvmServices
+namespace NewMvvm
 {
-    public interface IViewContainer
-    {
-        void Register<TView, TViewModel>() where TView : class;
-    }
-
-    internal interface IViewLocator
+    public interface IViewTypeInfoLocator
     {
         Type GetView(Type viewModelType);
+
+        ViewInfo GetViewInfo(Type viewType);
     }
 
     public interface IViewInstanceLocator

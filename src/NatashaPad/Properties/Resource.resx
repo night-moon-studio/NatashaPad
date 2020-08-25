@@ -120,4 +120,10 @@
   <data name="ErrorMessageBoxTitleString" xml:space="preserve">
     <value>执行发生异常</value>
   </data>
+  <data name="NugetManageTitleString" xml:space="preserve">
+    <value>引用管理</value>
+  </data>
+  <data name="UsingManageTitleString" xml:space="preserve">
+    <value>Using管理</value>
+  </data>
 </root>

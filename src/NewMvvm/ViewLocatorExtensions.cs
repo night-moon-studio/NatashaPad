@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using NatashaPad.MvvmServices;
-using NatashaPad.MvvmServices.MessageBox;
-using NatashaPad.MvvmServices.Windows;
+using NewMvvm;
+using NewMvvm.MessageBox;
+using NewMvvm.Windows;
 
 using System;
 using System.Collections.Generic;
@@ -21,13 +21,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             foreach (var item in options)
             {
-                services.AddTransient(item.Item1);
-                services.AddTransient(item.Item2);
+                services.AddTransient(item.ViewType);
+                services.AddTransient(item.ViewModelType);
             }
 
             services.TryAddSingleton(new DefaultViewContainer(options));
-            services.TryAddSingleton<IViewContainer>(s => s.GetService<DefaultViewContainer>());
-            services.TryAddSingleton<IViewLocator>(s => s.GetService<DefaultViewContainer>());
+            services.TryAddSingleton<IViewTypeInfoLocator>(s => s.GetService<DefaultViewContainer>());
 
             services.TryAddSingleton<IWindowManager, DefaultWindowManager>();
 

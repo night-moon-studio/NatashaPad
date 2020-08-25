@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace NatashaPad.MvvmServices.Windows
+namespace NewMvvm.Windows
 {
     internal class DefaultWindowManager : IWindowManager
     {
@@ -39,10 +39,24 @@ namespace NatashaPad.MvvmServices.Windows
 
             windowMap[viewModel] = window;
             return new DefaultDialogService(window);
+        }
 
-            void Window_Closed(object sender, EventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            windowMap.Remove(GetViewModel());
+
+            object GetViewModel()
             {
-                windowMap.Remove(viewModel);
+                foreach (var pair in windowMap)
+                {
+                    if (pair.Value == sender)
+                    {
+                        return pair.Key;
+                    }
+                }
+
+                //关闭窗口时，找不到注册信息？
+                throw new NotImplementedException();
             }
         }
 
