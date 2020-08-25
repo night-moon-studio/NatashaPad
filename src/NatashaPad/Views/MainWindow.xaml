@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NatashaPad.Views"
+        xmlns:local_res="clr-namespace:NatashaPad.Properties"
         xmlns:local_vm="clr-namespace:NatashaPad.ViewModels"
         d:DataContext="{d:DesignInstance Type=local_vm:MainViewModel, IsDesignTimeCreatable=False}"
         mc:Ignorable="d"
@@ -30,11 +31,13 @@
                     <StackPanel>
                         <Button Name="BtnUsing"
                                 Command="{Binding UsingManageCommand}"
-                                MinWidth="50">Using 管理</Button>
+                                MinWidth="50"
+                                Content="{x:Static local_res:Resource.UsingManageTitleString}" />
                         <Button Name="BtnReference"
                                 Command="{Binding NugetManageCommand}"
                                 Margin="0 10 0 0"
-                                MinWidth="50">引用管理</Button>
+                                MinWidth="50"
+                                Content="{x:Static local_res:Resource.NugetManageTitleString}" />
                     </StackPanel>
                 </materialDesign:PopupBox>
                 <TextBlock VerticalAlignment="Center"

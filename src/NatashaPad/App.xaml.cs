@@ -48,14 +48,14 @@ namespace NatashaPad
                     opt.Width = 600;
                     opt.Height = 400;
                     opt.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    opt.Title = "Using管理";
+                    opt.Title = NatashaPad.Properties.Resource.UsingManageTitleString;
                 });
                 options.Register<NugetManageView, NugetManageViewModel>(opt =>
                 {
                     opt.Width = 800;
                     opt.Height = 450;
                     opt.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    opt.Title = "引用管理";
+                    opt.Title = NatashaPad.Properties.Resource.NugetManageTitleString;
                 });
             });
         }
