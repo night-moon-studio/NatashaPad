@@ -13,9 +13,9 @@ Another dotnet debug tool like LinqPad and dotnet fiddle, powered by Roslyn and 
 
 ## Contributing
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/ant-design-blazor/ant-design-blazor/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/night-moon-studio/NatashaPad/pulls)
 
-If you'd like to contribute, just create a [Pull Request](https://github.com/ant-design-blazor/ant-design-blazor/pulls), or give us [Bug Report](https://github.com/ant-design-blazor/ant-design-blazor/issues/new).
+If you'd like to contribute, just create a [Pull Request](https://github.com/night-moon-studio/NatashaPad/pulls), or give us [Bug Report](https://github.com/night-moon-studio/NatashaPad/issues/new).
 
 Thanks for our contributors.
 
