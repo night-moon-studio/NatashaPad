@@ -60,7 +60,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
         public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion, CancellationToken cancellationToken = default)
         {
             var nugetVersion = NuGetVersion.Parse(packageVersion);
-            var dependencies = await GetPackageDependencies(packageName, nugetVersion);
+            var dependencies = await GetPackageDependencies(packageName, nugetVersion, cancellationToken);
             if (dependencies.ContainsKey(packageName))
             {
                 if (dependencies[packageName] < nugetVersion)

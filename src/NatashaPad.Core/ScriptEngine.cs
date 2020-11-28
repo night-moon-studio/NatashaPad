@@ -102,9 +102,9 @@ public static void Main() => MainAsync(null).Wait();
             if (scriptOptions.ReferenceResolvers.Count > 0)
             {
                 var references = await scriptOptions.ReferenceResolvers
-                    .Select(r => r.Resolve())
+                    .Select(r => r.Resolve(cancellationToken))
                     .WhenAll()
-                    .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray());
+                    .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray(), cancellationToken);
                 // add reference
                 foreach (var reference in references)
                 {
@@ -178,7 +178,7 @@ public static void Main() => MainAsync(null).Wait();
             if (scriptOptions.ReferenceResolvers.Count > 0)
             {
                 var references = await scriptOptions.ReferenceResolvers
-                        .Select(r => r.Resolve())
+                        .Select(r => r.Resolve(cancellationToken))
                         .WhenAll()
                         .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                     ;
