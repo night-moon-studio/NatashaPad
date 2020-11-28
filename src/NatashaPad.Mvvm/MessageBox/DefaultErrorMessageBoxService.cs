@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewMvvm.MessageBox
+namespace NatashaPad.Mvvm.MessageBox
 {
     internal class DefaultErrorMessageBoxService : IErrorMessageBoxService
     {

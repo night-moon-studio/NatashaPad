@@ -5,8 +5,8 @@ using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using NewMvvm.MessageBox;
-using NewMvvm.Windows;
+using NatashaPad.Mvvm.MessageBox;
+using NatashaPad.Mvvm.Windows;
 
 using Prism.Mvvm;
 

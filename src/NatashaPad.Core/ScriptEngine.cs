@@ -21,9 +21,27 @@ namespace NatashaPad
 
     public class CSharpScriptEngine : INScriptEngine
     {
+        private static readonly BindingFlags _mainMethodBindingFlags =
+            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
         static CSharpScriptEngine()
         {
-            NatashaInitializer.Initialize();
+            try
+            {
+                NatashaInitializer.InitializeAndPreheating()
+                .ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    NatashaInitializer.Initialize()
+                        .ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         public async Task Execute(string code, NScriptOptions scriptOptions)
@@ -111,8 +129,9 @@ public static void Main() => MainAsync(null).Wait();
             using (var capture = await ConsoleOutput.CaptureAsync())
             {
                 var entryPoint = assembly.EntryPoint
-                    ?? assembly.GetType("Program")?.GetMethod("Main",
-                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    ?? assembly.GetType("Program")?.GetMethod("Main", _mainMethodBindingFlags)
+                    ?? assembly.GetType("Program")?.GetMethod("MainAsync", _mainMethodBindingFlags)
+                    ;
                 if (null != entryPoint)
                 {
                     entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
@@ -124,6 +143,10 @@ public static void Main() => MainAsync(null).Wait();
                 if (!string.IsNullOrEmpty(capture.StandardOutput))
                 {
                     DumpOutHelper.OutputAction?.Invoke(capture.StandardOutput);
+                }
+                if (!string.IsNullOrEmpty(capture.StandardError))
+                {
+                    DumpOutHelper.OutputAction?.Invoke($"Error:{capture.StandardError}");
                 }
             }
         }

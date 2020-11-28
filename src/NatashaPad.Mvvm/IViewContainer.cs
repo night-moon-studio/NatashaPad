@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NewMvvm
+namespace NatashaPad.Mvvm
 {
     public interface IViewTypeInfoLocator
     {

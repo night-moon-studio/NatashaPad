@@ -2,11 +2,9 @@
 using Prism.Mvvm;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
-namespace NatashaPad.MvvmBase
+namespace NatashaPad.Mvvm
 {
     public class CollectionItem : BindableBase
     {
@@ -14,6 +12,7 @@ namespace NatashaPad.MvvmBase
 
         private ICommand _deleteThisCommand;
         public ICommand DeleteThisCommand => _deleteThisCommand ??= new DelegateCommand(FireDeleteMe);
+
         private void FireDeleteMe() => NeedDeleteMe?.Invoke(this, EventArgs.Empty);
     }
 }

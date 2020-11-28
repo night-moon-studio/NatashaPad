@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-using NatashaPad.MvvmBase;
+using NatashaPad.Mvvm;
 using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels.Base;
 

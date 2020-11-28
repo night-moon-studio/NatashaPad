@@ -15,6 +15,7 @@ namespace NatashaPad
             "System.Reflection",
             "System.Text",
             "System.Text.RegularExpressions",
+            "System.Threading",
             "System.Threading.Tasks",
         };
 

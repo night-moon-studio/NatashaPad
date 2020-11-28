@@ -7,9 +7,11 @@
     <VersionPrefix Condition="'$(VersionRevision)'=='0'">$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
     <VersionPrefix Condition="'$(VersionRevision)'!='0'">$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionRevision)</VersionPrefix>
     <VersionSuffix Condition="'$(Configuration)'=='DEBUG'">preview</VersionSuffix>
-    <InformationalVersion>$(PackageVersion)</InformationalVersion>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
 </Project>

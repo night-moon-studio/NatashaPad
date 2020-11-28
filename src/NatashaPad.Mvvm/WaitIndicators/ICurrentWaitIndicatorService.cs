@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewMvvm.WaitIndicators
+namespace NatashaPad.Mvvm.WaitIndicators
 {
     public interface ICurrentWaitIndicatorService : IDisposable
     {

@@ -1,4 +1,4 @@
-﻿namespace NewMvvm.MessageBox
+﻿namespace NatashaPad.Mvvm.MessageBox
 {
     public static class MessageBoxServiceExtensions
     {

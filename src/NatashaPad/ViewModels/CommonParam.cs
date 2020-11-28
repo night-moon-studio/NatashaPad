@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-using NewMvvm.Windows;
+using NatashaPad.Mvvm.Windows;
 
 using System;
 using System.Collections.Generic;

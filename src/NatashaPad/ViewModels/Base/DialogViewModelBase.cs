@@ -1,8 +1,4 @@
 ﻿using Prism.Commands;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -22,15 +18,18 @@ namespace NatashaPad.ViewModels.Base
         public bool Succeed { get; protected set; }
 
         public ICommand OkCommand { get; }
+
         protected virtual Task OkAsync()
         {
             Succeed = true;
             CloseMe();
             return Task.CompletedTask;
         }
+
         protected virtual bool CanOk() => true;
 
         public ICommand CancelCommand { get; }
+
         protected virtual Task CancelAsync()
         {
             CloseMe();

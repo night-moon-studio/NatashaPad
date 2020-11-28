@@ -22,7 +22,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
         private static readonly SourceCacheContext Cache = new SourceCacheContext();
         private static readonly SourceRepository Repository = NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
 
-        private const string DefaultTargetFramework = "netcoreapp3.1";
+        private const string DefaultTargetFramework = "net5.0";
 
         private static readonly string GlobalPackagesFolder;
 

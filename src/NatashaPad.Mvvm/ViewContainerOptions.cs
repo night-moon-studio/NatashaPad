@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace NewMvvm
+namespace NatashaPad.Mvvm
 {
     public class ViewContainerOptions : Collection<RegisterInfo>
     {

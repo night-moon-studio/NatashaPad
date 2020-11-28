@@ -1,8 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 
-namespace NatashaPad.MvvmBase
+namespace NatashaPad.Mvvm
 {
     public class RemovableCollection<T> : ObservableCollection<T>
         where T : CollectionItem
