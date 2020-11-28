@@ -1,10 +1,6 @@
 ﻿using MediatR;
-
 using NatashaPad.Mvvm.Windows;
-
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Threading;
 
 namespace NatashaPad.ViewModels

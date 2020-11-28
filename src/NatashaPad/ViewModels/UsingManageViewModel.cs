@@ -1,14 +1,8 @@
 ﻿using NatashaPad.Mvvm;
 using NatashaPad.ViewModels.Base;
-
 using Prism.Commands;
-using Prism.Mvvm;
-
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -30,10 +24,11 @@ namespace NatashaPad.ViewModels
         }
 
         public ICommand AddCommand { get; }
+
         private void Add()
         {
             if (!AllItems.Any(x => x.IsEmpty))
-                AllItems.Add(new NamespaceItem());
+                AllItems.Insert(0, new NamespaceItem(""));
         }
 
         public RemovableCollection<NamespaceItem> AllItems { get; }
@@ -53,14 +48,13 @@ namespace NatashaPad.ViewModels
 
     internal class NamespaceItem : CollectionItem
     {
-        public NamespaceItem() { }
-
         public NamespaceItem(string name)
         {
             _namespace = name;
         }
 
         private string _namespace;
+
         public string Namespace
         {
             get => _namespace;
@@ -77,7 +71,7 @@ namespace NatashaPad.ViewModels
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_namespace);
+            return _namespace.GetHashCode();
         }
     }
 }

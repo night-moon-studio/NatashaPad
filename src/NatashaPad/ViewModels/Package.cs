@@ -1,13 +1,9 @@
-﻿using System;
+﻿using NatashaPad.Mvvm;
+using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-
-using NatashaPad.Mvvm;
-
-using NuGet.Versioning;
-
-using Prism.Mvvm;
 
 namespace NatashaPad.ViewModels
 {
@@ -21,6 +17,7 @@ namespace NatashaPad.ViewModels
         internal class SearchedPackage : BindableBase, IPackage
         {
             public string Name { get; }
+
             public SearchedPackage(string name,
                 IEnumerable<string> versions)
             {
@@ -33,6 +30,7 @@ namespace NatashaPad.ViewModels
             public IEnumerable<string> Versions { get; }
 
             private string selectedVersion;
+
             public string SelectedVersion
             {
                 get => selectedVersion;
@@ -58,6 +56,7 @@ namespace NatashaPad.ViewModels
             { }
 
             private string version;
+
             public string Version
             {
                 get => version;

@@ -9,7 +9,10 @@ namespace NatashaPad.Mvvm
         protected override void InsertItem(int index, T item)
         {
             base.InsertItem(index, item);
-            item.NeedDeleteMe += Item_NeedDeleteMe;
+            if(item != null)
+            {
+                item.NeedDeleteMe += Item_NeedDeleteMe;
+            }
         }
 
         protected virtual void Item_NeedDeleteMe(object sender, EventArgs e)

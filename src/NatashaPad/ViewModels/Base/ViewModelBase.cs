@@ -1,14 +1,10 @@
-﻿using System;
-using System.Windows.Threading;
-
-using MediatR;
-
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-
 using NatashaPad.Mvvm.MessageBox;
 using NatashaPad.Mvvm.Windows;
-
 using Prism.Mvvm;
+using System;
+using System.Windows.Threading;
 
 namespace NatashaPad.ViewModels.Base
 {
@@ -24,6 +20,7 @@ namespace NatashaPad.ViewModels.Base
         protected IMediator Mediator => commonParam.Mediatr;
         protected Dispatcher Dispatcher => commonParam.Dispatcher;
         protected IServiceProvider ServiceProvider => commonParam.ServiceProvider;
+
         public T GetService<T>()
         {
             return ServiceProvider.GetService<T>();
@@ -35,6 +32,7 @@ namespace NatashaPad.ViewModels.Base
         }
 
         protected IWindowManager WindowManager => commonParam.WindowManager;
+
         protected T ShowDialog<T>() where T : ViewModelBase
         {
             return ShowDialog(GetService<T>());
