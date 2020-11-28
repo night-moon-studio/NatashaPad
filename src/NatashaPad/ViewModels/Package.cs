@@ -1,6 +1,5 @@
 ﻿using NatashaPad.Mvvm;
 using Prism.Mvvm;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
@@ -22,8 +21,7 @@ namespace NatashaPad.ViewModels
                 IEnumerable<string> versions)
             {
                 Name = name;
-                Versions = versions.Reverse()
-                    .ToArray();
+                Versions = versions.Reverse().ToArray();
                 selectedVersion = Versions.FirstOrDefault();
             }
 

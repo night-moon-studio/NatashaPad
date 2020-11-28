@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NatashaPad
@@ -8,6 +9,6 @@ namespace NatashaPad
     {
         string ReferenceType { get; }
 
-        Task<IList<PortableExecutableReference>> Resolve();
+        Task<IList<PortableExecutableReference>> Resolve(CancellationToken cancellationToken = default);
     }
 }

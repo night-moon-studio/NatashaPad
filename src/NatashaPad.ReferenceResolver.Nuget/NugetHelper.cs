@@ -57,7 +57,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
             return result;
         }
 
-        public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion)
+        public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion, CancellationToken cancellationToken = default)
         {
             var nugetVersion = NuGetVersion.Parse(packageVersion);
             var dependencies = await GetPackageDependencies(packageName, nugetVersion);
@@ -74,23 +74,22 @@ namespace NatashaPad.ReferenceResolver.Nuget
             }
 
             var packagePaths = await dependencies
-                .Select(d => ResolvePackagePath(d.Key, d.Value))
+                .Select(d => ResolvePackagePath(d.Key, d.Value, cancellationToken))
                 .WhenAll();
             //
             return packagePaths.Select(p => MetadataReference.CreateFromFile(p)).ToArray();
         }
 
-        private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version)
+        private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
         {
             var packageDir = Path.Combine(GlobalPackagesFolder, packageId.ToLowerInvariant(),
                 version.ToString());
             if (!Directory.Exists(packageDir))
             {
-                await EnsurePackageInstalled(packageId, version);
+                await EnsurePackageInstalled(packageId, version, cancellationToken);
             }
-            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>();
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger,
-                CancellationToken.None);
+            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger, cancellationToken);
             var bestDependency = dependencyInfo.DependencyGroups
                 .GetBestDependency();
             if (null != bestDependency)
@@ -169,7 +168,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
             throw new InvalidOperationException($"no supported target framework for package({packageName}:{packageVersion})");
         }
 
-        public static async Task<bool> EnsurePackageInstalled(string packageName, NuGetVersion nugetVersion)
+        public static async Task<bool> EnsurePackageInstalled(string packageName, NuGetVersion nugetVersion, CancellationToken cancellationToken = default)
         {
             var packageDir = Path.Combine(GlobalPackagesFolder, packageName.ToLowerInvariant(),
                 nugetVersion.ToString());
@@ -181,7 +180,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
             var packagerIdentity = new PackageIdentity(packageName, nugetVersion);
 
             var pkgDownloadContext = new PackageDownloadContext(Cache);
-            var downloadRes = await Repository.GetResourceAsync<DownloadResource>();
+            var downloadRes = await Repository.GetResourceAsync<DownloadResource>(cancellationToken);
 
             await RetryHelper.TryInvokeAsync(async () =>
                 await downloadRes.GetDownloadResourceResultAsync(
@@ -189,7 +188,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
                     pkgDownloadContext,
                     GlobalPackagesFolder,
                     Logger,
-                    CancellationToken.None), r => true);
+                    cancellationToken), r => true);
 
             return Directory.Exists(packageDir);
         }

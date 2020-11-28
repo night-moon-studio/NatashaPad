@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using NatashaPad.Mvvm;
+using NatashaPad.ReferenceResolver.Nuget;
+using NatashaPad.ViewModels.Base;
+using NuGet.Versioning;
+using Prism.Commands;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
-using NatashaPad.Mvvm;
-using NatashaPad.ReferenceResolver.Nuget;
-using NatashaPad.ViewModels.Base;
-
-using Prism.Commands;
-
 using WeihanLi.Extensions;
 
 namespace NatashaPad.ViewModels
@@ -28,12 +26,23 @@ namespace NatashaPad.ViewModels
             SearchCommand = new DelegateCommand(async () => await SearchAsync());
         }
 
+        protected override async Task OkAsync()
+        {
+            if (InstalledPackages.Count > 0)
+            {
+                await InstalledPackages.Select(p => NugetHelper.EnsurePackageInstalled(p.Name, NuGetVersion.Parse(p.Version)))
+                    .WhenAll()
+                    .ConfigureAwait(false)
+                    ;
+            }
+            await base.OkAsync();
+        }
 
         public ObservableCollection<InstalledPackage> InstalledPackages { get; }
         public ObservableCollection<SearchedPackage> SearchedPackages { get; }
 
-
         private string searchText;
+
         public string SearchText
         {
             get => searchText;
@@ -41,6 +50,7 @@ namespace NatashaPad.ViewModels
         }
 
         public ICommand SearchCommand { get; }
+
         private async Task SearchAsync()
         {
             var text = searchText;

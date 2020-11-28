@@ -6,6 +6,7 @@ using Natasha.Framework;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using WeihanLi.Common.Helpers;
 using WeihanLi.Extensions;
@@ -14,9 +15,9 @@ namespace NatashaPad
 {
     public interface INScriptEngine
     {
-        Task Execute(string code, NScriptOptions scriptOptions);
+        Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default);
 
-        Task<object> Eval(string code, NScriptOptions scriptOptions);
+        Task<object> Eval(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default);
     }
 
     public class CSharpScriptEngine : INScriptEngine
@@ -28,23 +29,16 @@ namespace NatashaPad
         {
             try
             {
-                NatashaInitializer.InitializeAndPreheating()
-                .ConfigureAwait(false).GetAwaiter().GetResult();
+                NatashaInitializer.Initialize()
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                try
-                {
-                    NatashaInitializer.Initialize()
-                        .ConfigureAwait(false).GetAwaiter().GetResult();
-                }
-                catch (Exception)
-                {
-                }
+                InvokeHelper.OnInvokeException?.Invoke(ex);
             }
         }
 
-        public async Task Execute(string code, NScriptOptions scriptOptions)
+        public async Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
         {
             if (code.Contains("static void Main(") || code.Contains("static async Task Main("))
             {
@@ -97,7 +91,7 @@ public static void Main() => MainAsync(null).Wait();
 
             scriptOptions.UsingList.Add("NatashaPad");
 
-            code = $"{scriptOptions.UsingList.Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
+            code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
 
             using var domain = DomainManagement.Random;
             var assBuilder = new AssemblyCSharpBuilder();
@@ -151,7 +145,7 @@ public static void Main() => MainAsync(null).Wait();
             }
         }
 
-        public async Task<object> Eval(string code, NScriptOptions scriptOptions)
+        public async Task<object> Eval(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
         {
             var originalReferences = new[]
             {
@@ -178,7 +172,7 @@ public static void Main() => MainAsync(null).Wait();
             var options = ScriptOptions.Default
                 .WithLanguageVersion(LanguageVersion.Latest)
                 .AddReferences(defaultReferences)
-                .WithImports(scriptOptions.UsingList)
+                .WithImports(scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)))
                 ;
 
             if (scriptOptions.ReferenceResolvers.Count > 0)
@@ -186,12 +180,12 @@ public static void Main() => MainAsync(null).Wait();
                 var references = await scriptOptions.ReferenceResolvers
                         .Select(r => r.Resolve())
                         .WhenAll()
-                        .ContinueWith(r => r.Result.SelectMany(_ => _))
+                        .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                     ;
                 options = options.AddReferences(references);
             }
 
-            return await CSharpScript.EvaluateAsync(code, options);
+            return await CSharpScript.EvaluateAsync(code, options, cancellationToken: cancellationToken);
         }
     }
 }
