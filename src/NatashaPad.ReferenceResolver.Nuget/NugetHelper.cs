@@ -43,10 +43,10 @@ namespace NatashaPad.ReferenceResolver.Nuget
             GlobalPackagesFolder = GetGlobalPackagesFolder();
         }
 
-        public static async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePrerelease = true, CancellationToken cancellationToken = default)
+        public static async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
         {
             var resource = await Repository.GetResourceAsync<AutoCompleteResource>(cancellationToken);
-            var result = await resource.IdStartsWith(packagePrefix, includePrerelease, Logger, cancellationToken);
+            var result = await resource.IdStartsWith(packagePrefix, includePreRelease, Logger, cancellationToken);
             return result;
         }
 
@@ -113,56 +113,56 @@ namespace NatashaPad.ReferenceResolver.Nuget
             throw new InvalidOperationException($"package({packageId}:{version}) cannot be used for({DefaultTargetFramework})");
         }
 
-        public static async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion)
+        public static async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken = default)
         {
-            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>();
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), Cache, Logger,
-                CancellationToken.None);
-            if (dependencyInfo.DependencyGroups.Count > 0)
+            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), Cache, Logger, cancellationToken);
+            if (dependencyInfo.DependencyGroups.Count <= 0)
             {
-                var bestDependency = dependencyInfo.DependencyGroups
-                    .GetBestDependency();
-                if (null != bestDependency)
+                return new Dictionary<string, NuGetVersion>();
+            }
+
+            var bestDependency = dependencyInfo.DependencyGroups
+                .GetBestDependency();
+            if (bestDependency != null)
+            {
+                var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+                foreach (var package in bestDependency.Packages)
                 {
-                    var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var package in bestDependency.Packages)
+                    if (list.ContainsKey(package.Id))
                     {
-                        if (list.ContainsKey(package.Id))
+                        if (list[package.Id] < package.VersionRange.MinVersion)
                         {
-                            if (list[package.Id] < package.VersionRange.MinVersion)
+                            list[package.Id] = package.VersionRange.MinVersion;
+                        }
+                    }
+                    else
+                    {
+                        list.Add(package.Id, package.VersionRange.MinVersion);
+                    }
+
+                    var childrenDependencies =
+                        await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
+                    if (childrenDependencies != null && childrenDependencies.Count > 0)
+                    {
+                        foreach (var childrenDependency in childrenDependencies)
+                        {
+                            if (list.ContainsKey(childrenDependency.Key))
                             {
-                                list[package.Id] = package.VersionRange.MinVersion;
+                                if (list[childrenDependency.Key] < childrenDependency.Value)
+                                {
+                                    list[childrenDependency.Key] = childrenDependency.Value;
+                                }
                             }
-                        }
-                        else
-                        {
-                            list.Add(package.Id, package.VersionRange.MinVersion);
-                        }
-                        var childrenDependencies = await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
-                        if (childrenDependencies != null && childrenDependencies.Count > 0)
-                        {
-                            foreach (var childrenDependency in childrenDependencies)
+                            else
                             {
-                                if (list.ContainsKey(childrenDependency.Key))
-                                {
-                                    if (list[childrenDependency.Key] < childrenDependency.Value)
-                                    {
-                                        list[childrenDependency.Key] = childrenDependency.Value;
-                                    }
-                                }
-                                else
-                                {
-                                    list.Add(childrenDependency.Key, childrenDependency.Value);
-                                }
+                                list.Add(childrenDependency.Key, childrenDependency.Value);
                             }
                         }
                     }
-                    return list;
                 }
-            }
-            else
-            {
-                return new Dictionary<string, NuGetVersion>();
+
+                return list;
             }
 
             throw new InvalidOperationException($"no supported target framework for package({packageName}:{packageVersion})");
@@ -205,14 +205,8 @@ namespace NatashaPad.ReferenceResolver.Nuget
             group = dependencyGroups
                     .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(x => x.TargetFramework.Version)
-                    .FirstOrDefault()
-                ;
-            if (null != group)
-            {
-                return group;
-            }
-
-            return null;
+                    .FirstOrDefault();
+            return group;
         }
     }
 }

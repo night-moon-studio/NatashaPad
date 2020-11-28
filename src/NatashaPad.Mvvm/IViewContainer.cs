@@ -16,7 +16,7 @@ namespace NatashaPad.Mvvm
 
     public static class ViewContainerExtensions
     {
-        public static object GetView<TViewModel>(IViewInstanceLocator locator)
+        public static object GetView<TViewModel>(this IViewInstanceLocator locator)
         {
             return locator.GetView(typeof(TViewModel));
         }

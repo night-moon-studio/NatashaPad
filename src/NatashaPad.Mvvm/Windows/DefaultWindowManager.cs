@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 
 namespace NatashaPad.Mvvm.Windows
@@ -21,6 +20,7 @@ namespace NatashaPad.Mvvm.Windows
         }
 
         private readonly Dictionary<object, Window> windowMap;
+
         public ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel)
         {
             if (!windowMap.TryGetValue(viewModel, out var window))

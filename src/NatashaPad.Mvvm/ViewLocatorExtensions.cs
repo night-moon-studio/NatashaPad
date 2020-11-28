@@ -1,15 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using NatashaPad.Mvvm;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NatashaPad.Mvvm.MessageBox;
 using NatashaPad.Mvvm.Windows;
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace NatashaPad.Mvvm
 {
     public static class ViewLocatorExtensions
     {

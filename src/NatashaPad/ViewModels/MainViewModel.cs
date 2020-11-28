@@ -108,15 +108,14 @@ namespace NatashaPad.ViewModels
                 else
                 {
                     // expression, eval
-                    object result = await _scriptEngine.Eval(input, _scriptOptions);
-
-                    if (null == result)
+                    var result = await _scriptEngine.Eval(input, _scriptOptions);
+                    if (result is null)
                     {
                         Output += "(null)";
                     }
                     else
                     {
-                        string dumpedResult = _dumperResolver.Resolve(result.GetType())
+                        var dumpedResult = _dumperResolver.Resolve(result.GetType())
                             .Dump(result);
                         Output += dumpedResult;
                     }
@@ -128,9 +127,6 @@ namespace NatashaPad.ViewModels
             }
         }
 
-        /// <summary>
-        /// 命名空间
-        /// </summary>
         private ICollection<string> _namespaces;
 
         public ICommand UsingManageCommand { get; }

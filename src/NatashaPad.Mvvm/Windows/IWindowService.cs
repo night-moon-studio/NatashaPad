@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NatashaPad.Mvvm.Windows
+﻿namespace NatashaPad.Mvvm.Windows
 {
     public interface IWindowManager
     {
         ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel);
+
         IWindowService GetWindowService<TViewModel>(TViewModel viewModel);
+
         IDialogService GetDialogService<TViewModel>(TViewModel viewModel);
     }
 
     public interface IWindowService
     {
         void Show();
+
         void Hide();
+
         void Close();
     }
 
@@ -23,10 +23,7 @@ namespace NatashaPad.Mvvm.Windows
         void ShowDialog();
     }
 
-    public interface ICurrentWindowService
+    public interface ICurrentWindowService : IWindowService
     {
-        void Show();
-        void Hide();
-        void Close();
     }
 }

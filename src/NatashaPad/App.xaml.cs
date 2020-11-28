@@ -1,13 +1,12 @@
 ﻿using MediatR;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NatashaPad.Mvvm;
 using NatashaPad.Mvvm.Windows;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
 using System.Windows;
 using System.Windows.Threading;
-
 using WeihanLi.Common;
 
 namespace NatashaPad

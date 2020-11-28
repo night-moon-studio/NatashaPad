@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 
 namespace NatashaPad.Mvvm.Windows
 {
@@ -48,7 +45,7 @@ namespace NatashaPad.Mvvm.Windows
             window.DataContext = viewModel;
             return window;
 
-            /* 
+            /*
              * TODO: 可选的解法：
              * 在资源文件中定义View和ViewModel的映射关系
              * 预先设计好默认window

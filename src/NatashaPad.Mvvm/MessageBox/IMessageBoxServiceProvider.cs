@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NatashaPad.Mvvm.MessageBox
+﻿namespace NatashaPad.Mvvm.MessageBox
 {
     public interface IInfoMessageBoxService
     {

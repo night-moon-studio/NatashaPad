@@ -6,10 +6,6 @@ namespace NatashaPad.Mvvm
 {
     public class ViewContainerOptions : Collection<RegisterInfo>
     {
-        public ViewContainerOptions()
-        {
-        }
-
         public void Register<TView, TViewModel>()
         {
             Add(new RegisterInfo(typeof(TView), typeof(TViewModel)));
