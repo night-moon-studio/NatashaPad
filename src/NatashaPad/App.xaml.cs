@@ -1,17 +1,12 @@
 ﻿using MediatR;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using NewMvvm.MessageBox;
-using NewMvvm.Windows;
+using NatashaPad.Mvvm;
+using NatashaPad.Mvvm.Windows;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
-
-using System;
 using System.Windows;
 using System.Windows.Threading;
-
 using WeihanLi.Common;
 
 namespace NatashaPad
@@ -66,16 +61,8 @@ namespace NatashaPad
             ConfigureServices(services);
             DependencyResolver.SetDependencyResolver(services);
 
-            ShowWindow(services.BuildServiceProvider());
-        }
-
-        private void ShowWindow(IServiceProvider serviceProvider)
-        {
-            var vm = serviceProvider.GetRequiredService<MainViewModel>();
-
-            var mgr = serviceProvider.GetRequiredService<IWindowManager>();
-            var windowService = mgr.GetWindowService(vm);
-
+            var windowService = DependencyResolver.ResolveService<IWindowManager>()
+                .GetWindowService(DependencyResolver.ResolveService<MainViewModel>());
             windowService.Show();
         }
     }

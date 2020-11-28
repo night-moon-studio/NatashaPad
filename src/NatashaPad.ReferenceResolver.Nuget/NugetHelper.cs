@@ -22,7 +22,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
         private static readonly SourceCacheContext Cache = new SourceCacheContext();
         private static readonly SourceRepository Repository = NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
 
-        private const string DefaultTargetFramework = "netcoreapp3.1";
+        private const string DefaultTargetFramework = "net5.0";
 
         private static readonly string GlobalPackagesFolder;
 
@@ -43,10 +43,10 @@ namespace NatashaPad.ReferenceResolver.Nuget
             GlobalPackagesFolder = GetGlobalPackagesFolder();
         }
 
-        public static async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePrerelease = true, CancellationToken cancellationToken = default)
+        public static async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
         {
             var resource = await Repository.GetResourceAsync<AutoCompleteResource>(cancellationToken);
-            var result = await resource.IdStartsWith(packagePrefix, includePrerelease, Logger, cancellationToken);
+            var result = await resource.IdStartsWith(packagePrefix, includePreRelease, Logger, cancellationToken);
             return result;
         }
 
@@ -57,10 +57,10 @@ namespace NatashaPad.ReferenceResolver.Nuget
             return result;
         }
 
-        public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion)
+        public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion, CancellationToken cancellationToken = default)
         {
             var nugetVersion = NuGetVersion.Parse(packageVersion);
-            var dependencies = await GetPackageDependencies(packageName, nugetVersion);
+            var dependencies = await GetPackageDependencies(packageName, nugetVersion, cancellationToken);
             if (dependencies.ContainsKey(packageName))
             {
                 if (dependencies[packageName] < nugetVersion)
@@ -74,23 +74,22 @@ namespace NatashaPad.ReferenceResolver.Nuget
             }
 
             var packagePaths = await dependencies
-                .Select(d => ResolvePackagePath(d.Key, d.Value))
+                .Select(d => ResolvePackagePath(d.Key, d.Value, cancellationToken))
                 .WhenAll();
             //
             return packagePaths.Select(p => MetadataReference.CreateFromFile(p)).ToArray();
         }
 
-        private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version)
+        private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
         {
             var packageDir = Path.Combine(GlobalPackagesFolder, packageId.ToLowerInvariant(),
                 version.ToString());
             if (!Directory.Exists(packageDir))
             {
-                await EnsurePackageInstalled(packageId, version);
+                await EnsurePackageInstalled(packageId, version, cancellationToken);
             }
-            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>();
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger,
-                CancellationToken.None);
+            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger, cancellationToken);
             var bestDependency = dependencyInfo.DependencyGroups
                 .GetBestDependency();
             if (null != bestDependency)
@@ -114,62 +113,62 @@ namespace NatashaPad.ReferenceResolver.Nuget
             throw new InvalidOperationException($"package({packageId}:{version}) cannot be used for({DefaultTargetFramework})");
         }
 
-        public static async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion)
+        public static async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken = default)
         {
-            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>();
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), Cache, Logger,
-                CancellationToken.None);
-            if (dependencyInfo.DependencyGroups.Count > 0)
+            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), Cache, Logger, cancellationToken);
+            if (dependencyInfo.DependencyGroups.Count <= 0)
             {
-                var bestDependency = dependencyInfo.DependencyGroups
-                    .GetBestDependency();
-                if (null != bestDependency)
+                return new Dictionary<string, NuGetVersion>();
+            }
+
+            var bestDependency = dependencyInfo.DependencyGroups
+                .GetBestDependency();
+            if (bestDependency != null)
+            {
+                var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+                foreach (var package in bestDependency.Packages)
                 {
-                    var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var package in bestDependency.Packages)
+                    if (list.ContainsKey(package.Id))
                     {
-                        if (list.ContainsKey(package.Id))
+                        if (list[package.Id] < package.VersionRange.MinVersion)
                         {
-                            if (list[package.Id] < package.VersionRange.MinVersion)
+                            list[package.Id] = package.VersionRange.MinVersion;
+                        }
+                    }
+                    else
+                    {
+                        list.Add(package.Id, package.VersionRange.MinVersion);
+                    }
+
+                    var childrenDependencies =
+                        await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
+                    if (childrenDependencies != null && childrenDependencies.Count > 0)
+                    {
+                        foreach (var childrenDependency in childrenDependencies)
+                        {
+                            if (list.ContainsKey(childrenDependency.Key))
                             {
-                                list[package.Id] = package.VersionRange.MinVersion;
+                                if (list[childrenDependency.Key] < childrenDependency.Value)
+                                {
+                                    list[childrenDependency.Key] = childrenDependency.Value;
+                                }
                             }
-                        }
-                        else
-                        {
-                            list.Add(package.Id, package.VersionRange.MinVersion);
-                        }
-                        var childrenDependencies = await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
-                        if (childrenDependencies != null && childrenDependencies.Count > 0)
-                        {
-                            foreach (var childrenDependency in childrenDependencies)
+                            else
                             {
-                                if (list.ContainsKey(childrenDependency.Key))
-                                {
-                                    if (list[childrenDependency.Key] < childrenDependency.Value)
-                                    {
-                                        list[childrenDependency.Key] = childrenDependency.Value;
-                                    }
-                                }
-                                else
-                                {
-                                    list.Add(childrenDependency.Key, childrenDependency.Value);
-                                }
+                                list.Add(childrenDependency.Key, childrenDependency.Value);
                             }
                         }
                     }
-                    return list;
                 }
-            }
-            else
-            {
-                return new Dictionary<string, NuGetVersion>();
+
+                return list;
             }
 
             throw new InvalidOperationException($"no supported target framework for package({packageName}:{packageVersion})");
         }
 
-        public static async Task<bool> EnsurePackageInstalled(string packageName, NuGetVersion nugetVersion)
+        public static async Task<bool> EnsurePackageInstalled(string packageName, NuGetVersion nugetVersion, CancellationToken cancellationToken = default)
         {
             var packageDir = Path.Combine(GlobalPackagesFolder, packageName.ToLowerInvariant(),
                 nugetVersion.ToString());
@@ -181,7 +180,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
             var packagerIdentity = new PackageIdentity(packageName, nugetVersion);
 
             var pkgDownloadContext = new PackageDownloadContext(Cache);
-            var downloadRes = await Repository.GetResourceAsync<DownloadResource>();
+            var downloadRes = await Repository.GetResourceAsync<DownloadResource>(cancellationToken);
 
             await RetryHelper.TryInvokeAsync(async () =>
                 await downloadRes.GetDownloadResourceResultAsync(
@@ -189,7 +188,7 @@ namespace NatashaPad.ReferenceResolver.Nuget
                     pkgDownloadContext,
                     GlobalPackagesFolder,
                     Logger,
-                    CancellationToken.None), r => true);
+                    cancellationToken), r => true);
 
             return Directory.Exists(packageDir);
         }
@@ -206,14 +205,8 @@ namespace NatashaPad.ReferenceResolver.Nuget
             group = dependencyGroups
                     .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(x => x.TargetFramework.Version)
-                    .FirstOrDefault()
-                ;
-            if (null != group)
-            {
-                return group;
-            }
-
-            return null;
+                    .FirstOrDefault();
+            return group;
         }
     }
 }

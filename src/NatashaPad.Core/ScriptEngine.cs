@@ -6,6 +6,7 @@ using Natasha.Framework;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using WeihanLi.Common.Helpers;
 using WeihanLi.Extensions;
@@ -14,19 +15,30 @@ namespace NatashaPad
 {
     public interface INScriptEngine
     {
-        Task Execute(string code, NScriptOptions scriptOptions);
+        Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default);
 
-        Task<object> Eval(string code, NScriptOptions scriptOptions);
+        Task<object> Eval(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default);
     }
 
     public class CSharpScriptEngine : INScriptEngine
     {
+        private static readonly BindingFlags _mainMethodBindingFlags =
+            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
         static CSharpScriptEngine()
         {
-            NatashaInitializer.Initialize();
+            try
+            {
+                NatashaInitializer.Initialize()
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                InvokeHelper.OnInvokeException?.Invoke(ex);
+            }
         }
 
-        public async Task Execute(string code, NScriptOptions scriptOptions)
+        public async Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
         {
             if (code.Contains("static void Main(") || code.Contains("static async Task Main("))
             {
@@ -79,7 +91,7 @@ public static void Main() => MainAsync(null).Wait();
 
             scriptOptions.UsingList.Add("NatashaPad");
 
-            code = $"{scriptOptions.UsingList.Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
+            code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
 
             using var domain = DomainManagement.Random;
             var assBuilder = new AssemblyCSharpBuilder();
@@ -90,9 +102,9 @@ public static void Main() => MainAsync(null).Wait();
             if (scriptOptions.ReferenceResolvers.Count > 0)
             {
                 var references = await scriptOptions.ReferenceResolvers
-                    .Select(r => r.Resolve())
+                    .Select(r => r.Resolve(cancellationToken))
                     .WhenAll()
-                    .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray());
+                    .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray(), cancellationToken);
                 // add reference
                 foreach (var reference in references)
                 {
@@ -111,8 +123,9 @@ public static void Main() => MainAsync(null).Wait();
             using (var capture = await ConsoleOutput.CaptureAsync())
             {
                 var entryPoint = assembly.EntryPoint
-                    ?? assembly.GetType("Program")?.GetMethod("Main",
-                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    ?? assembly.GetType("Program")?.GetMethod("Main", _mainMethodBindingFlags)
+                    ?? assembly.GetType("Program")?.GetMethod("MainAsync", _mainMethodBindingFlags)
+                    ;
                 if (null != entryPoint)
                 {
                     entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
@@ -125,10 +138,14 @@ public static void Main() => MainAsync(null).Wait();
                 {
                     DumpOutHelper.OutputAction?.Invoke(capture.StandardOutput);
                 }
+                if (!string.IsNullOrEmpty(capture.StandardError))
+                {
+                    DumpOutHelper.OutputAction?.Invoke($"Error:{capture.StandardError}");
+                }
             }
         }
 
-        public async Task<object> Eval(string code, NScriptOptions scriptOptions)
+        public async Task<object> Eval(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
         {
             var originalReferences = new[]
             {
@@ -155,20 +172,20 @@ public static void Main() => MainAsync(null).Wait();
             var options = ScriptOptions.Default
                 .WithLanguageVersion(LanguageVersion.Latest)
                 .AddReferences(defaultReferences)
-                .WithImports(scriptOptions.UsingList)
+                .WithImports(scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)))
                 ;
 
             if (scriptOptions.ReferenceResolvers.Count > 0)
             {
                 var references = await scriptOptions.ReferenceResolvers
-                        .Select(r => r.Resolve())
+                        .Select(r => r.Resolve(cancellationToken))
                         .WhenAll()
-                        .ContinueWith(r => r.Result.SelectMany(_ => _))
+                        .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                     ;
                 options = options.AddReferences(references);
             }
 
-            return await CSharpScript.EvaluateAsync(code, options);
+            return await CSharpScript.EvaluateAsync(code, options, cancellationToken: cancellationToken);
         }
     }
 }

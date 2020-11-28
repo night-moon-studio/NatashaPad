@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NatashaPad.ReferenceResolver.Nuget
@@ -18,9 +19,9 @@ namespace NatashaPad.ReferenceResolver.Nuget
 
         public string ReferenceType => "NugetReference";
 
-        public Task<IList<PortableExecutableReference>> Resolve()
+        public Task<IList<PortableExecutableReference>> Resolve(CancellationToken cancellationToken = default)
         {
-            return NugetHelper.ResolveAssemblies(PackageName, PackageVersion);
+            return NugetHelper.ResolveAssemblies(PackageName, PackageVersion, cancellationToken);
         }
 
         public override int GetHashCode()
