@@ -1,41 +1,39 @@
-﻿using System;
-using WeihanLi.Extensions;
+﻿using WeihanLi.Extensions;
 
-namespace NatashaPad
+namespace NatashaPad;
+
+public interface IDumper
 {
-    public interface IDumper
-    {
-        Func<Type, bool> TypePredicate { get; }
+    Func<Type, bool> TypePredicate { get; }
 
-        string Dump(object obj);
+    string Dump(object obj);
+}
+
+public class DefaultDumper : IDumper
+{
+    public static readonly IDumper Instance = new DefaultDumper();
+
+    public Func<Type, bool> TypePredicate { get; } = t => true;
+
+    public string Dump(object obj)
+    {
+        return obj.ToJsonOrString();
     }
+}
 
-    public class DefaultDumper : IDumper
+public static class DumperExtensions
+{
+    public static void Dump(this object obj)
     {
-        public static readonly IDumper Instance = new DefaultDumper();
-
-        public Func<Type, bool> TypePredicate { get; } = t => true;
-
-        public string Dump(object obj)
+        string dumpedResult;
+        if (obj is null)
         {
-            return obj.ToJsonOrString();
+            dumpedResult = "(null)";
         }
-    }
-
-    public static class DumperExtensions
-    {
-        public static void Dump(this object obj)
+        else
         {
-            string dumpedResult;
-            if (obj is null)
-            {
-                dumpedResult = "(null)";
-            }
-            else
-            {
-                dumpedResult = DefaultDumper.Instance.Dump(obj);
-            }
-            DumpOutHelper.OutputAction?.Invoke(dumpedResult);
+            dumpedResult = DefaultDumper.Instance.Dump(obj);
         }
+        DumpOutHelper.OutputAction?.Invoke(dumpedResult);
     }
 }

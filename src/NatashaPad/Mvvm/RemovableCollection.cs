@@ -1,40 +1,38 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
-namespace NatashaPad.Mvvm
+namespace NatashaPad.Mvvm;
+
+public class RemovableCollection<T> : ObservableCollection<T>
+    where T : CollectionItem
 {
-    public class RemovableCollection<T> : ObservableCollection<T>
-        where T : CollectionItem
+    protected override void InsertItem(int index, T item)
     {
-        protected override void InsertItem(int index, T item)
+        base.InsertItem(index, item);
+        if (item != null)
         {
-            base.InsertItem(index, item);
-            if(item != null)
-            {
-                item.NeedDeleteMe += Item_NeedDeleteMe;
-            }
+            item.NeedDeleteMe += Item_NeedDeleteMe;
         }
+    }
 
-        protected virtual void Item_NeedDeleteMe(object sender, EventArgs e)
-        {
-            Remove((T)sender);
-        }
+    protected virtual void Item_NeedDeleteMe(object sender, EventArgs e)
+    {
+        Remove((T)sender);
+    }
 
-        protected override void RemoveItem(int index)
+    protected override void RemoveItem(int index)
+    {
+        var item = this[index];
+        base.RemoveItem(index);
+        item.NeedDeleteMe -= Item_NeedDeleteMe;
+    }
+
+    protected override void ClearItems()
+    {
+        foreach (var item in Items)
         {
-            var item = this[index];
-            base.RemoveItem(index);
             item.NeedDeleteMe -= Item_NeedDeleteMe;
         }
 
-        protected override void ClearItems()
-        {
-            foreach (var item in Items)
-            {
-                item.NeedDeleteMe -= Item_NeedDeleteMe;
-            }
-
-            base.ClearItems();
-        }
+        base.ClearItems();
     }
 }

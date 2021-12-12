@@ -1,58 +1,56 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace NatashaPad.Mvvm
+namespace NatashaPad.Mvvm;
+
+public class ViewContainerOptions : Collection<RegisterInfo>
 {
-    public class ViewContainerOptions : Collection<RegisterInfo>
+    public void Register<TView, TViewModel>()
     {
-        public void Register<TView, TViewModel>()
-        {
-            Add(new RegisterInfo(typeof(TView), typeof(TViewModel)));
-        }
-
-        public void Register<TView, TViewModel>(Action<ViewInfo> action)
-        {
-            var reg = new RegisterInfo(typeof(TView), typeof(TViewModel));
-
-            var viewInfo = new ViewInfo();
-            action?.Invoke(viewInfo);
-            reg.ViewInfo = viewInfo;
-
-            Add(reg);
-        }
+        Add(new RegisterInfo(typeof(TView), typeof(TViewModel)));
     }
 
-    public sealed class RegisterInfo
+    public void Register<TView, TViewModel>(Action<ViewInfo> action)
     {
-        public RegisterInfo(Type viewType, Type viewModelType, string name)
-        {
-            ViewType = viewType;
-            ViewModelType = viewModelType;
-            Name = name;
-        }
+        var reg = new RegisterInfo(typeof(TView), typeof(TViewModel));
 
-        public RegisterInfo(Type viewType, Type viewModelType) : this(viewType, viewModelType, string.Empty)
-        {
-        }
+        var viewInfo = new ViewInfo();
+        action?.Invoke(viewInfo);
+        reg.ViewInfo = viewInfo;
 
-        public string Name { get; }
+        Add(reg);
+    }
+}
 
-        public Type ViewType { get; }
-        public Type ViewModelType { get; }
-
-        public ViewInfo ViewInfo { get; set; }
+public sealed class RegisterInfo
+{
+    public RegisterInfo(Type viewType, Type viewModelType, string name)
+    {
+        ViewType = viewType;
+        ViewModelType = viewModelType;
+        Name = name;
     }
 
-    public class ViewInfo
+    public RegisterInfo(Type viewType, Type viewModelType) : this(viewType, viewModelType, string.Empty)
     {
-        public int? Width { get; set; }
-        public int? Height { get; set; }
-
-        public string Title { get; set; }
-
-        public WindowStartupLocation WindowStartupLocation { get; set; } = WindowStartupLocation.Manual;
-
-        public SizeToContent? SizeToContent { get; set; }
     }
+
+    public string Name { get; }
+
+    public Type ViewType { get; }
+    public Type ViewModelType { get; }
+
+    public ViewInfo ViewInfo { get; set; }
+}
+
+public class ViewInfo
+{
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+
+    public string Title { get; set; }
+
+    public WindowStartupLocation WindowStartupLocation { get; set; } = WindowStartupLocation.Manual;
+
+    public SizeToContent? SizeToContent { get; set; }
 }

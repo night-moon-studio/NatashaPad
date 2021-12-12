@@ -1,212 +1,199 @@
-﻿using Microsoft.CodeAnalysis;
-using NuGet.Common;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
-using NuGet.Protocol;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using NuGet.Protocol.Core.Types;
 using WeihanLi.Common.Helpers;
 using WeihanLi.Extensions;
 
-namespace NatashaPad.ReferenceResolver.Nuget
+namespace NatashaPad.ReferenceResolver.Nuget;
+
+public static class NugetHelper
 {
-    public static class NugetHelper
+    private static readonly ILogger Logger = NullLogger.Instance;
+    private static readonly SourceCacheContext Cache = new();
+    private static readonly SourceRepository Repository = NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
+
+    private const string DefaultTargetFramework = "net5.0";
+
+    private static readonly string GlobalPackagesFolder;
+
+    public static string GetGlobalPackagesFolder()
     {
-        private static readonly ILogger Logger = NullLogger.Instance;
-        private static readonly SourceCacheContext Cache = new SourceCacheContext();
-        private static readonly SourceRepository Repository = NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
+        var result = CommandRunner.Capture("dotnet", "nuget locals global-packages -l");
 
-        private const string DefaultTargetFramework = "net5.0";
-
-        private static readonly string GlobalPackagesFolder;
-
-        public static string GetGlobalPackagesFolder()
+        var folder = string.Empty;
+        if (result.StandardOut.StartsWith("global-packages:"))
         {
-            var result = CommandRunner.Capture("dotnet", "nuget locals global-packages -l");
-
-            var folder = string.Empty;
-            if (result.StandardOut.StartsWith("global-packages:"))
-            {
-                folder = result.StandardOut.Substring("global-packages:".Length).Trim();
-            }
-            return folder;
+            folder = result.StandardOut.Substring("global-packages:".Length).Trim();
         }
+        return folder;
+    }
 
-        static NugetHelper()
-        {
-            GlobalPackagesFolder = GetGlobalPackagesFolder();
-        }
+    static NugetHelper()
+    {
+        GlobalPackagesFolder = GetGlobalPackagesFolder();
+    }
 
-        public static async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
-        {
-            var resource = await Repository.GetResourceAsync<AutoCompleteResource>(cancellationToken);
-            var result = await resource.IdStartsWith(packagePrefix, includePreRelease, Logger, cancellationToken);
-            return result;
-        }
+    public static async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
+    {
+        var resource = await Repository.GetResourceAsync<AutoCompleteResource>(cancellationToken);
+        var result = await resource.IdStartsWith(packagePrefix, includePreRelease, Logger, cancellationToken);
+        return result;
+    }
 
-        public static async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, CancellationToken cancellationToken = default)
-        {
-            var resource = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
-            var result = await resource.GetAllVersionsAsync(packageId, Cache, Logger, cancellationToken);
-            return result;
-        }
+    public static async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, CancellationToken cancellationToken = default)
+    {
+        var resource = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+        var result = await resource.GetAllVersionsAsync(packageId, Cache, Logger, cancellationToken);
+        return result;
+    }
 
-        public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion, CancellationToken cancellationToken = default)
+    public static async Task<IList<PortableExecutableReference>> ResolveAssemblies(string packageName, string packageVersion, CancellationToken cancellationToken = default)
+    {
+        var nugetVersion = NuGetVersion.Parse(packageVersion);
+        var dependencies = await GetPackageDependencies(packageName, nugetVersion, cancellationToken);
+        if (dependencies.ContainsKey(packageName))
         {
-            var nugetVersion = NuGetVersion.Parse(packageVersion);
-            var dependencies = await GetPackageDependencies(packageName, nugetVersion, cancellationToken);
-            if (dependencies.ContainsKey(packageName))
-            {
-                if (dependencies[packageName] < nugetVersion)
-                {
-                    dependencies[packageName] = nugetVersion;
-                }
-            }
-            else
+            if (dependencies[packageName] < nugetVersion)
             {
                 dependencies[packageName] = nugetVersion;
             }
-
-            var packagePaths = await dependencies
-                .Select(d => ResolvePackagePath(d.Key, d.Value, cancellationToken))
-                .WhenAll();
-            //
-            return packagePaths.Select(p => MetadataReference.CreateFromFile(p)).ToArray();
+        }
+        else
+        {
+            dependencies[packageName] = nugetVersion;
         }
 
-        private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
+        var packagePaths = await dependencies
+            .Select(d => ResolvePackagePath(d.Key, d.Value, cancellationToken))
+            .WhenAll();
+        //
+        return packagePaths.Select(p => MetadataReference.CreateFromFile(p)).ToArray();
+    }
+
+    private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
+    {
+        var packageDir = Path.Combine(GlobalPackagesFolder, packageId.ToLowerInvariant(),
+            version.ToString());
+        if (!Directory.Exists(packageDir))
         {
-            var packageDir = Path.Combine(GlobalPackagesFolder, packageId.ToLowerInvariant(),
-                version.ToString());
-            if (!Directory.Exists(packageDir))
-            {
-                await EnsurePackageInstalled(packageId, version, cancellationToken);
-            }
-            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger, cancellationToken);
-            var bestDependency = dependencyInfo.DependencyGroups
-                .GetBestDependency();
-            if (null != bestDependency)
-            {
-                var targetFrameworkString = bestDependency.TargetFramework.GetFrameworkString();
-                packageDir = Path.Combine(packageDir, "lib", targetFrameworkString.ToLowerInvariant().TrimStart('.'));
+            await EnsurePackageInstalled(packageId, version, cancellationToken);
+        }
+        var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+        var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId, version, Cache, Logger, cancellationToken);
+        var bestDependency = dependencyInfo.DependencyGroups
+            .GetBestDependency();
+        if (null != bestDependency)
+        {
+            var targetFrameworkString = bestDependency.TargetFramework.GetFrameworkString();
+            packageDir = Path.Combine(packageDir, "lib", targetFrameworkString.ToLowerInvariant().TrimStart('.'));
 
-                var packagePath = Path.Combine(packageDir, $"{packageId}.dll");
-                if (File.Exists(packagePath))
-                {
-                    return packagePath;
-                }
-
-                packagePath = Directory.GetFiles(packageDir, "*.dll", SearchOption.TopDirectoryOnly).FirstOrDefault();
-                if (null != packagePath)
-                {
-                    return packagePath;
-                }
+            var packagePath = Path.Combine(packageDir, $"{packageId}.dll");
+            if (File.Exists(packagePath))
+            {
+                return packagePath;
             }
 
-            throw new InvalidOperationException($"package({packageId}:{version}) cannot be used for({DefaultTargetFramework})");
+            packagePath = Directory.GetFiles(packageDir, "*.dll", SearchOption.TopDirectoryOnly).FirstOrDefault();
+            if (null != packagePath)
+            {
+                return packagePath;
+            }
         }
 
-        public static async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken = default)
-        {
-            var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), Cache, Logger, cancellationToken);
-            if (dependencyInfo.DependencyGroups.Count <= 0)
-            {
-                return new Dictionary<string, NuGetVersion>();
-            }
+        throw new InvalidOperationException($"package({packageId}:{version}) cannot be used for({DefaultTargetFramework})");
+    }
 
-            var bestDependency = dependencyInfo.DependencyGroups
-                .GetBestDependency();
-            if (bestDependency != null)
+    public static async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken = default)
+    {
+        var findPkgByIdRes = await Repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+        var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), Cache, Logger, cancellationToken);
+        if (dependencyInfo.DependencyGroups.Count <= 0)
+        {
+            return new Dictionary<string, NuGetVersion>();
+        }
+
+        var bestDependency = dependencyInfo.DependencyGroups
+            .GetBestDependency();
+        if (bestDependency != null)
+        {
+            var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+            foreach (var package in bestDependency.Packages)
             {
-                var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
-                foreach (var package in bestDependency.Packages)
+                if (list.ContainsKey(package.Id))
                 {
-                    if (list.ContainsKey(package.Id))
+                    if (list[package.Id] < package.VersionRange.MinVersion)
                     {
-                        if (list[package.Id] < package.VersionRange.MinVersion)
+                        list[package.Id] = package.VersionRange.MinVersion;
+                    }
+                }
+                else
+                {
+                    list.Add(package.Id, package.VersionRange.MinVersion);
+                }
+
+                var childrenDependencies =
+                    await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
+                if (childrenDependencies != null && childrenDependencies.Count > 0)
+                {
+                    foreach (var childrenDependency in childrenDependencies)
+                    {
+                        if (list.ContainsKey(childrenDependency.Key))
                         {
-                            list[package.Id] = package.VersionRange.MinVersion;
+                            if (list[childrenDependency.Key] < childrenDependency.Value)
+                            {
+                                list[childrenDependency.Key] = childrenDependency.Value;
+                            }
+                        }
+                        else
+                        {
+                            list.Add(childrenDependency.Key, childrenDependency.Value);
                         }
                     }
-                    else
-                    {
-                        list.Add(package.Id, package.VersionRange.MinVersion);
-                    }
-
-                    var childrenDependencies =
-                        await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
-                    if (childrenDependencies != null && childrenDependencies.Count > 0)
-                    {
-                        foreach (var childrenDependency in childrenDependencies)
-                        {
-                            if (list.ContainsKey(childrenDependency.Key))
-                            {
-                                if (list[childrenDependency.Key] < childrenDependency.Value)
-                                {
-                                    list[childrenDependency.Key] = childrenDependency.Value;
-                                }
-                            }
-                            else
-                            {
-                                list.Add(childrenDependency.Key, childrenDependency.Value);
-                            }
-                        }
-                    }
                 }
-
-                return list;
             }
 
-            throw new InvalidOperationException($"no supported target framework for package({packageName}:{packageVersion})");
+            return list;
         }
 
-        public static async Task<bool> EnsurePackageInstalled(string packageName, NuGetVersion nugetVersion, CancellationToken cancellationToken = default)
+        throw new InvalidOperationException($"no supported target framework for package({packageName}:{packageVersion})");
+    }
+
+    public static async Task<bool> EnsurePackageInstalled(string packageName, NuGetVersion nugetVersion, CancellationToken cancellationToken = default)
+    {
+        var packageDir = Path.Combine(GlobalPackagesFolder, packageName.ToLowerInvariant(),
+            nugetVersion.ToString());
+        if (Directory.Exists(packageDir))
         {
-            var packageDir = Path.Combine(GlobalPackagesFolder, packageName.ToLowerInvariant(),
-                nugetVersion.ToString());
-            if (Directory.Exists(packageDir))
-            {
-                return true;
-            }
-
-            var packagerIdentity = new PackageIdentity(packageName, nugetVersion);
-
-            var pkgDownloadContext = new PackageDownloadContext(Cache);
-            var downloadRes = await Repository.GetResourceAsync<DownloadResource>(cancellationToken);
-
-            await RetryHelper.TryInvokeAsync(async () =>
-                await downloadRes.GetDownloadResourceResultAsync(
-                    packagerIdentity,
-                    pkgDownloadContext,
-                    GlobalPackagesFolder,
-                    Logger,
-                    cancellationToken), r => true);
-
-            return Directory.Exists(packageDir);
+            return true;
         }
 
-        private static PackageDependencyGroup GetBestDependency(this IReadOnlyList<PackageDependencyGroup> dependencyGroups)
-        {
-            var group = dependencyGroups.FirstOrDefault(x =>
-                x.TargetFramework.GetFrameworkString().Equals(DefaultTargetFramework, StringComparison.OrdinalIgnoreCase));
-            if (null != group)
-            {
-                return group;
-            }
+        var packagerIdentity = new PackageIdentity(packageName, nugetVersion);
 
-            group = dependencyGroups
-                    .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(x => x.TargetFramework.Version)
-                    .FirstOrDefault();
+        var pkgDownloadContext = new PackageDownloadContext(Cache);
+        var downloadRes = await Repository.GetResourceAsync<DownloadResource>(cancellationToken);
+
+        await RetryHelper.TryInvokeAsync(async () =>
+            await downloadRes.GetDownloadResourceResultAsync(
+                packagerIdentity,
+                pkgDownloadContext,
+                GlobalPackagesFolder,
+                Logger,
+                cancellationToken), r => true);
+
+        return Directory.Exists(packageDir);
+    }
+
+    private static PackageDependencyGroup GetBestDependency(this IReadOnlyList<PackageDependencyGroup> dependencyGroups)
+    {
+        var group = dependencyGroups.FirstOrDefault(x =>
+            x.TargetFramework.GetFrameworkString().Equals(DefaultTargetFramework, StringComparison.OrdinalIgnoreCase));
+        if (null != group)
+        {
             return group;
         }
+
+        group = dependencyGroups
+            .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(x => x.TargetFramework.Version)
+            .FirstOrDefault();
+        return group;
     }
 }

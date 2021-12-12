@@ -1,10 +1,9 @@
-﻿namespace NatashaPad.Mvvm.MessageBox
+﻿namespace NatashaPad.Mvvm.MessageBox;
+
+internal class DefaultErrorMessageBoxService : IErrorMessageBoxService
 {
-    internal class DefaultErrorMessageBoxService : IErrorMessageBoxService
+    public void ShowError(string title, string content)
     {
-        public void ShowError(string title, string content)
-        {
-            System.Windows.MessageBox.Show(content, title);
-        }
+        System.Windows.MessageBox.Show(content, title);
     }
 }

@@ -1,29 +1,28 @@
-﻿namespace NatashaPad.Mvvm.Windows
+﻿namespace NatashaPad.Mvvm.Windows;
+
+public interface IWindowManager
 {
-    public interface IWindowManager
-    {
-        ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel);
+    ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel);
 
-        IWindowService GetWindowService<TViewModel>(TViewModel viewModel);
+    IWindowService GetWindowService<TViewModel>(TViewModel viewModel);
 
-        IDialogService GetDialogService<TViewModel>(TViewModel viewModel);
-    }
+    IDialogService GetDialogService<TViewModel>(TViewModel viewModel);
+}
 
-    public interface IWindowService
-    {
-        void Show();
+public interface IWindowService
+{
+    void Show();
 
-        void Hide();
+    void Hide();
 
-        void Close();
-    }
+    void Close();
+}
 
-    public interface IDialogService : IWindowService
-    {
-        void ShowDialog();
-    }
+public interface IDialogService : IWindowService
+{
+    void ShowDialog();
+}
 
-    public interface ICurrentWindowService : IWindowService
-    {
-    }
+public interface ICurrentWindowService : IWindowService
+{
 }
