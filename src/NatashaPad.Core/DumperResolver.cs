@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace NatashaPad;
 
-namespace NatashaPad
+public class DumperResolver
 {
-    public class DumperResolver
+    private readonly ICollection<IDumper> _dumpers;
+
+    public DumperResolver(IEnumerable<IDumper> dumpers)
     {
-        private readonly ICollection<IDumper> _dumpers;
+        _dumpers = dumpers.Reverse().ToArray();
+    }
 
-        public DumperResolver(IEnumerable<IDumper> dumpers)
+    public IDumper Resolve(Type type)
+    {
+        foreach (var dumper in _dumpers)
         {
-            _dumpers = dumpers.Reverse().ToArray();
+            if (dumper.TypePredicate(type))
+                return dumper;
         }
 
-        public IDumper Resolve(Type type)
-        {
-            foreach (var dumper in _dumpers)
-            {
-                if (dumper.TypePredicate(type))
-                    return dumper;
-            }
-
-            return DefaultDumper.Instance;
-        }
+        return DefaultDumper.Instance;
     }
 }

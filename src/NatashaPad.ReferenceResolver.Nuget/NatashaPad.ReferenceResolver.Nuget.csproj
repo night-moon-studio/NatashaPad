@@ -5,8 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nuget.Packaging" Version="5.8.0" />
-    <PackageReference Include="Nuget.Protocol" Version="5.8.0" />
+    <Using Include="NuGet.Common" />
+    <Using Include="NuGet.Packaging" />
+    <Using Include="NuGet.Packaging.Core" />
+    <Using Include="NuGet.Protocol" />
+    <Using Include="NuGet.Protocol.Core.Types" />
+    <Using Include="NuGet.Versioning" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Nuget.Packaging" Version="6.0.0" />
+    <PackageReference Include="Nuget.Protocol" Version="6.0.0" />
     <ProjectReference Include="..\NatashaPad.Core\NatashaPad.Core.csproj" />
   </ItemGroup>
 

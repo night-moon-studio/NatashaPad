@@ -1,16 +1,13 @@
-using Xunit;
+namespace NatashaPad.Test;
 
-namespace NatashaPad.Test
+public class DumperTest
 {
-    public class DumperTest
-    {
-        private readonly IDumper _dumper = DefaultDumper.Instance;
+    private readonly IDumper _dumper = DefaultDumper.Instance;
 
-        [Theory]
-        [InlineData("NatashaPad")]
-        public void StringTest(string str)
-        {
-            Assert.Equal(str, _dumper.Dump(str));
-        }
+    [Theory]
+    [InlineData("NatashaPad")]
+    public void StringTest(string str)
+    {
+        Assert.Equal(str, _dumper.Dump(str));
     }
 }

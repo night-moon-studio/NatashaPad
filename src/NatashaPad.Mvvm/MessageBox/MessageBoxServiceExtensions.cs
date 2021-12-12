@@ -1,10 +1,9 @@
-﻿namespace NatashaPad.Mvvm.MessageBox
+﻿namespace NatashaPad.Mvvm.MessageBox;
+
+public static class MessageBoxServiceExtensions
 {
-    public static class MessageBoxServiceExtensions
+    public static void Show(this IErrorMessageBoxService messageBoxService, string content)
     {
-        public static void Show(this IErrorMessageBoxService messageBoxService, string content)
-        {
-            messageBoxService.ShowError(Properties.Resource.ErrorMessageBoxTitleString, content);
-        }
+        messageBoxService.ShowError(Properties.Resource.ErrorMessageBoxTitleString, content);
     }
 }

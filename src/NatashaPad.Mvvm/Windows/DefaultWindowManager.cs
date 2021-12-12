@@ -1,68 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 
-namespace NatashaPad.Mvvm.Windows
+namespace NatashaPad.Mvvm.Windows;
+
+internal class DefaultWindowManager : IWindowManager
 {
-    internal class DefaultWindowManager : IWindowManager
+    private readonly IViewInstanceLocator locator;
+    private readonly IWindowProvider windowProvider;
+
+    public DefaultWindowManager(
+        IViewInstanceLocator locator,
+        IWindowProvider windowProvider)
     {
-        private readonly IViewInstanceLocator locator;
-        private readonly IWindowProvider windowProvider;
+        this.locator = locator;
+        this.windowProvider = windowProvider;
 
-        public DefaultWindowManager(
-            IViewInstanceLocator locator,
-            IWindowProvider windowProvider)
+        windowMap = new Dictionary<object, Window>();
+    }
+
+    private readonly Dictionary<object, Window> windowMap;
+
+    public ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel)
+    {
+        if (!windowMap.TryGetValue(viewModel, out var window))
         {
-            this.locator = locator;
-            this.windowProvider = windowProvider;
-
-            windowMap = new Dictionary<object, Window>();
+            throw new ArgumentException(Properties.Resource.FoundNoWindowErrorString);
         }
 
-        private readonly Dictionary<object, Window> windowMap;
+        return new DefaultCurrentWindowService(window);
+    }
 
-        public ICurrentWindowService GetCurrent<TViewModel>(TViewModel viewModel)
+    public IDialogService GetDialogService<TViewModel>(TViewModel viewModel)
+    {
+        var view = locator.GetView(typeof(TViewModel));
+        var window = windowProvider.Create(view, viewModel);
+        window.Closed += Window_Closed;
+
+        windowMap[viewModel] = window;
+        return new DefaultDialogService(window);
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+        windowMap.Remove(GetViewModel());
+
+        object GetViewModel()
         {
-            if (!windowMap.TryGetValue(viewModel, out var window))
+            foreach (var pair in windowMap)
             {
-                throw new ArgumentException(Properties.Resource.FoundNoWindowErrorString);
-            }
-
-            return new DefaultCurrentWindowService(window);
-        }
-
-        public IDialogService GetDialogService<TViewModel>(TViewModel viewModel)
-        {
-            var view = locator.GetView(typeof(TViewModel));
-            var window = windowProvider.Create(view, viewModel);
-            window.Closed += Window_Closed;
-
-            windowMap[viewModel] = window;
-            return new DefaultDialogService(window);
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            windowMap.Remove(GetViewModel());
-
-            object GetViewModel()
-            {
-                foreach (var pair in windowMap)
+                if (pair.Value == sender)
                 {
-                    if (pair.Value == sender)
-                    {
-                        return pair.Key;
-                    }
+                    return pair.Key;
                 }
-
-                //关闭窗口时，找不到注册信息？
-                throw new NotImplementedException();
             }
-        }
 
-        public IWindowService GetWindowService<TViewModel>(TViewModel viewModel)
-        {
-            return GetDialogService(viewModel);
+            //关闭窗口时，找不到注册信息？
+            throw new NotImplementedException();
         }
+    }
+
+    public IWindowService GetWindowService<TViewModel>(TViewModel viewModel)
+    {
+        return GetDialogService(viewModel);
     }
 }

@@ -1,14 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿namespace NatashaPad;
 
-namespace NatashaPad
+public interface IReferenceResolver
 {
-    public interface IReferenceResolver
-    {
-        string ReferenceType { get; }
+    string ReferenceType { get; }
 
-        Task<IList<PortableExecutableReference>> Resolve(CancellationToken cancellationToken = default);
-    }
+    Task<IList<PortableExecutableReference>> Resolve(CancellationToken cancellationToken = default);
 }

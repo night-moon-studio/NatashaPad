@@ -1,10 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace NatashaPad
+namespace NatashaPad;
+
+public class DumpOutHelper
 {
-    public class DumpOutHelper
-    {
-        public static Action<string> OutputAction = (str) => { Debug.WriteLine(str); };
-    }
+    public static Action<string> OutputAction = (str) => { Debug.WriteLine(str); };
 }

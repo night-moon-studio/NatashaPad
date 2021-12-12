@@ -1,67 +1,64 @@
 ﻿using NatashaPad.Mvvm;
 using Prism.Mvvm;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Input;
 
-namespace NatashaPad.ViewModels
+namespace NatashaPad.ViewModels;
+
+internal partial class NugetManageViewModel
 {
-    internal partial class NugetManageViewModel
+    internal interface IPackage
     {
-        internal interface IPackage
+        string Name { get; }
+    }
+
+    internal class SearchedPackage : BindableBase, IPackage
+    {
+        public string Name { get; }
+
+        public SearchedPackage(string name,
+            IEnumerable<string> versions)
         {
-            string Name { get; }
+            Name = name;
+            Versions = versions.Reverse().ToArray();
+            selectedVersion = Versions.FirstOrDefault();
         }
 
-        internal class SearchedPackage : BindableBase, IPackage
+        public IEnumerable<string> Versions { get; }
+
+        private string selectedVersion;
+
+        public string SelectedVersion
         {
-            public string Name { get; }
-
-            public SearchedPackage(string name,
-                IEnumerable<string> versions)
-            {
-                Name = name;
-                Versions = versions.Reverse().ToArray();
-                selectedVersion = Versions.FirstOrDefault();
-            }
-
-            public IEnumerable<string> Versions { get; }
-
-            private string selectedVersion;
-
-            public string SelectedVersion
-            {
-                get => selectedVersion;
-                set => SetProperty(ref selectedVersion, value);
-            }
-
-            public ICommand InstallCommand { get; internal set; }
+            get => selectedVersion;
+            set => SetProperty(ref selectedVersion, value);
         }
 
-        internal class InstalledPackage : CollectionItem, IPackage
+        public ICommand InstallCommand { get; internal set; }
+    }
+
+    internal class InstalledPackage : CollectionItem, IPackage
+    {
+        public string Name { get; }
+
+        public InstalledPackage(string name,
+            string version)
         {
-            public string Name { get; }
-
-            public InstalledPackage(string name,
-                string version)
-            {
-                Name = name;
-                Version = version;
-            }
-
-            public InstalledPackage(SearchedPackage searchedPackage)
-                : this(searchedPackage.Name, searchedPackage.SelectedVersion)
-            { }
-
-            private string version;
-
-            public string Version
-            {
-                get => version;
-                internal set => SetProperty(ref version, value);
-            }
-
-            public ICommand UninstallCommand => DeleteThisCommand;
+            Name = name;
+            Version = version;
         }
+
+        public InstalledPackage(SearchedPackage searchedPackage)
+            : this(searchedPackage.Name, searchedPackage.SelectedVersion)
+        { }
+
+        private string _version;
+
+        public string Version
+        {
+            get => _version;
+            internal set => SetProperty(ref _version, value);
+        }
+
+        public ICommand UninstallCommand => DeleteThisCommand;
     }
 }

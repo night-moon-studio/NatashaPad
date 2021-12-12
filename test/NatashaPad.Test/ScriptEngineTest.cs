@@ -1,91 +1,85 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using NatashaPad.ReferenceResolver.Nuget;
+﻿using NatashaPad.ReferenceResolver.Nuget;
 using WeihanLi.Extensions;
-using Xunit;
-using Xunit.Abstractions;
 
-namespace NatashaPad.Test
+namespace NatashaPad.Test;
+
+public class ScriptEngineTest
 {
-    public class ScriptEngineTest
+    private readonly ITestOutputHelper _testOutputHelper;
+    private readonly INScriptEngine _scriptEngine;
+
+    public ScriptEngineTest(ITestOutputHelper testOutputHelper)
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-        private readonly INScriptEngine _scriptEngine;
+        _testOutputHelper = testOutputHelper;
+        _scriptEngine = new CSharpScriptEngine();
+    }
 
-        public ScriptEngineTest(ITestOutputHelper testOutputHelper)
+    [Fact]
+    public async Task ExecuteTest()
+    {
+        DumpOutHelper.OutputAction += Output;
+        try
         {
-            _testOutputHelper = testOutputHelper;
-            _scriptEngine = new CSharpScriptEngine();
+            await _scriptEngine.Execute("\"Hello NatashaPad\".Dump();", new NScriptOptions());
+
+            await _scriptEngine.Execute("Console.WriteLine(\"Hello NatashaPad\");", new NScriptOptions());
         }
-
-        [Fact]
-        public async Task ExecuteTest()
+        catch (Natasha.Error.NatashaException ex)
         {
-            DumpOutHelper.OutputAction += Output;
-            try
-            {
-                await _scriptEngine.Execute("\"Hello NatashaPad\".Dump();", new NScriptOptions());
-
-                await _scriptEngine.Execute("Console.WriteLine(\"Hello NatashaPad\");", new NScriptOptions());
-            }
-            catch (Natasha.Error.CompilationException ex)
-            {
-                _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
-                throw;
-            }
-            finally
-            {
-                DumpOutHelper.OutputAction -= Output;
-            }
+            _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
+            throw;
         }
-
-        [Fact]
-        public async Task ExecuteTestWithReference()
+        finally
         {
-            DumpOutHelper.OutputAction += Output;
-            try
-            {
-                var options =  new NScriptOptions();
-                options.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.4"));
-                await _scriptEngine.Execute("(1+1).Dump();", options);                
-            }
-            catch (Natasha.Error.CompilationException ex)
-            {
-                _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
-                throw;
-            }
-            finally
-            {
-                DumpOutHelper.OutputAction -= Output;
-            }
+            DumpOutHelper.OutputAction -= Output;
         }
+    }
 
-        private void Output(string msg)
+    [Fact]
+    public async Task ExecuteTestWithReference()
+    {
+        DumpOutHelper.OutputAction += Output;
+        try
         {
-            _testOutputHelper.WriteLine(msg);
-        }
-
-        [Fact]
-        public async Task EvalTest()
-        {
-            var result = await _scriptEngine.Eval("1+1", new NScriptOptions());
-            Assert.Equal(2, result);
-
-            result = await _scriptEngine.Eval("\"Hello \" + \"NatashaPad\"", new NScriptOptions());
-            Assert.Equal("Hello NatashaPad", result);
-
-            result = await _scriptEngine.Eval("DateTime.Today.ToString(\"yyyyMMdd\")", new NScriptOptions());
-            Assert.Equal(DateTime.Today.ToString("yyyyMMdd"), result);
-        }
-
-        [Fact]
-        public async Task EvalTestWithReference()
-        {
-            var options =  new NScriptOptions();
+            var options = new NScriptOptions();
             options.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.4"));
-            var result = await _scriptEngine.Eval("1+1", options);
-            Assert.Equal(2, result);
+            await _scriptEngine.Execute("(1+1).Dump();", options);
         }
+        catch (Natasha.Error.NatashaException ex)
+        {
+            _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
+            throw;
+        }
+        finally
+        {
+            DumpOutHelper.OutputAction -= Output;
+        }
+    }
+
+    private void Output(string msg)
+    {
+        _testOutputHelper.WriteLine(msg);
+    }
+
+    [Fact]
+    public async Task EvalTest()
+    {
+        var result = await _scriptEngine.Eval("1+1", new NScriptOptions());
+        Assert.Equal(2, result);
+
+        result = await _scriptEngine.Eval("\"Hello \" + \"NatashaPad\"", new NScriptOptions());
+        Assert.Equal("Hello NatashaPad", result);
+
+        result = await _scriptEngine.Eval("DateTime.Today.ToString(\"yyyyMMdd\")", new NScriptOptions());
+        Assert.Equal(DateTime.Today.ToString("yyyyMMdd"), result);
+    }
+
+    [Fact]
+    public async Task EvalTestWithReference()
+    {
+        var options = new NScriptOptions();
+        options.ReferenceResolvers.Add(new NugetReferenceResolver("WeihanLi.Npoi", "1.9.4"));
+        var result = await _scriptEngine.Eval("1+1", options);
+        Assert.Equal(2, result);
     }
 }

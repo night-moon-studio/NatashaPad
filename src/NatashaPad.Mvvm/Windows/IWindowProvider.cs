@@ -1,9 +1,8 @@
 ﻿using System.Windows;
 
-namespace NatashaPad.Mvvm.Windows
+namespace NatashaPad.Mvvm.Windows;
+
+public interface IWindowProvider
 {
-    public interface IWindowProvider
-    {
-        Window Create(object view, object viewModel);
-    }
+    Window Create(object view, object viewModel);
 }
