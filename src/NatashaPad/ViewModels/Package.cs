@@ -1,4 +1,7 @@
-﻿using NatashaPad.Mvvm;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using NatashaPad.Mvvm;
 using Prism.Mvvm;
 using System.Windows.Input;
 
@@ -20,17 +23,17 @@ internal partial class NugetManageViewModel
         {
             Name = name;
             Versions = versions.Reverse().ToArray();
-            selectedVersion = Versions.FirstOrDefault();
+            _selectedVersion = Versions.FirstOrDefault();
         }
 
         public IEnumerable<string> Versions { get; }
 
-        private string selectedVersion;
+        private string _selectedVersion;
 
         public string SelectedVersion
         {
-            get => selectedVersion;
-            set => SetProperty(ref selectedVersion, value);
+            get => _selectedVersion;
+            set => SetProperty(ref _selectedVersion, value);
         }
 
         public ICommand InstallCommand { get; internal set; }

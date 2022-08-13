@@ -1,4 +1,7 @@
-﻿using NatashaPad.Mvvm;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using NatashaPad.Mvvm;
 using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels.Base;
 using NuGet.Versioning;
@@ -38,19 +41,19 @@ internal partial class NugetManageViewModel : DialogViewModelBase
     public ObservableCollection<InstalledPackage> InstalledPackages { get; }
     public ObservableCollection<SearchedPackage> SearchedPackages { get; }
 
-    private string searchText;
+    private string _searchText;
 
     public string SearchText
     {
-        get => searchText;
-        set => SetProperty(ref searchText, value);
+        get => _searchText;
+        set => SetProperty(ref _searchText, value);
     }
 
     public ICommand SearchCommand { get; }
 
     private async Task SearchAsync()
     {
-        var text = searchText;
+        var text = _searchText;
         if (string.IsNullOrWhiteSpace(text))
             return;
         text = text.Trim();

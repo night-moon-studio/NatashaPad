@@ -1,4 +1,7 @@
-﻿using Prism.Commands;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using Prism.Commands;
 using Prism.Mvvm;
 using System.Windows.Input;
 

@@ -1,4 +1,7 @@
-﻿namespace NatashaPad;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+namespace NatashaPad;
 
 public class DumperResolver
 {

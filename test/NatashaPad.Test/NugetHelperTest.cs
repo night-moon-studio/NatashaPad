@@ -1,4 +1,7 @@
-﻿using NatashaPad.ReferenceResolver.Nuget;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using NatashaPad.ReferenceResolver.Nuget;
 using NuGet.Versioning;
 
 namespace NatashaPad.Test;

@@ -1,8 +1,12 @@
-﻿using MediatR;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NatashaPad.Mvvm;
 using NatashaPad.Mvvm.Windows;
+using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
 using System.Windows;
@@ -24,6 +28,8 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IReferenceResolver, FileReferenceResolver>();
+        services.AddSingleton<IReferenceResolver, NuGetReferenceResolver>();
         services.AddSingleton<INScriptEngine, CSharpScriptEngine>();
         services.AddTransient<NScriptOptions>();
         services.TryAddSingleton<DumperResolver>();

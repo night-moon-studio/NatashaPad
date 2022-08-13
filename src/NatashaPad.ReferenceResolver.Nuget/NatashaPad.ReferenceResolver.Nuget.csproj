@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +13,8 @@
     <Using Include="NuGet.Versioning" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Nuget.Packaging" Version="6.0.0" />
-    <PackageReference Include="Nuget.Protocol" Version="6.0.0" />
+    <PackageReference Include="Nuget.Packaging" Version="6.3.0" />
+    <PackageReference Include="Nuget.Protocol" Version="6.3.0" />
     <ProjectReference Include="..\NatashaPad.Core\NatashaPad.Core.csproj" />
   </ItemGroup>
 

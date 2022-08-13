@@ -1,4 +1,7 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Natasha.Framework;
 using System.Reflection;
@@ -16,8 +19,7 @@ public interface INScriptEngine
 
 public class CSharpScriptEngine : INScriptEngine
 {
-    private static readonly BindingFlags _mainMethodBindingFlags =
-        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+    private const BindingFlags MainMethodBindingFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
     static CSharpScriptEngine()
     {
@@ -32,57 +34,14 @@ public class CSharpScriptEngine : INScriptEngine
         }
     }
 
+    private readonly Dictionary<string, IReferenceResolver> _referenceResolvers;
+    public CSharpScriptEngine(IEnumerable<IReferenceResolver> referenceResolvers)
+    {
+        _referenceResolvers = referenceResolvers.ToDictionary(x => x.ReferenceType, x => x, StringComparer.OrdinalIgnoreCase);
+    }
+
     public async Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
     {
-        if (code.Contains("static void Main(") || code.Contains("static async Task Main("))
-        {
-            // Program
-        }
-        else
-        {
-            // Statement
-            if (code.Contains("await "))
-            {
-                //async
-                code = $@"public static async Task MainAsync()
-  {{
-    {code}
-  }}";
-            }
-            else
-            {
-                // sync
-                code = $@"public static void Main(string[] args)
-  {{
-    {code}
-  }}";
-            }
-        }
-
-        if (!code.Contains("static void Main(") && code.Contains("static async Task Main("))
-        {
-            if (code.Contains("static async Task Main()"))
-            {
-                code = $@"{code}
-public static void Main() => MainAsync().Wait();
-";
-            }
-            else
-            {
-                code = $@"{code}
-public static void Main() => MainAsync(null).Wait();
-";
-            }
-        }
-
-        if (!code.Contains("class Program"))
-        {
-            code = $@"public class Program
-{{
-  {code}
-}}";
-        }
-
         scriptOptions.UsingList.Add("NatashaPad");
 
         code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
@@ -93,10 +52,10 @@ public static void Main() => MainAsync(null).Wait();
         assBuilder.Add(code, scriptOptions.UsingList);
 
         // add reference
-        if (scriptOptions.ReferenceResolvers.Count > 0)
+        if (scriptOptions.References.Count > 0)
         {
-            var references = await scriptOptions.ReferenceResolvers
-                .Select(r => r.Resolve(cancellationToken))
+            var references = await scriptOptions.References
+                .Select(r => _referenceResolvers[r.ReferenceType].Resolve(r.Reference, cancellationToken))
                 .WhenAll()
                 .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray(), cancellationToken);
             // add reference
@@ -108,15 +67,17 @@ public static void Main() => MainAsync(null).Wait();
                 }
             }
         }
+
+        assBuilder.Compiler.AssemblyKind = OutputKind.ConsoleApplication;
         assBuilder.Compiler.Domain = domain;
-        assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.File;
+        assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.Stream;
 
         var assembly = assBuilder.GetAssembly();
 
         using var capture = await ConsoleOutput.CaptureAsync();
         var entryPoint = assembly.EntryPoint
-                         ?? assembly.GetType("Program")?.GetMethod("Main", _mainMethodBindingFlags)
-                         ?? assembly.GetType("Program")?.GetMethod("MainAsync", _mainMethodBindingFlags)
+                         ?? assembly.GetType("Program")?.GetMethod("Main", MainMethodBindingFlags)
+                         ?? assembly.GetType("Program")?.GetMethod("MainAsync", MainMethodBindingFlags)
             ;
         if (null != entryPoint)
         {
@@ -166,10 +127,10 @@ public static void Main() => MainAsync(null).Wait();
                 .WithImports(scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)))
             ;
 
-        if (scriptOptions.ReferenceResolvers.Count > 0)
+        if (scriptOptions.References.Count > 0)
         {
-            var references = await scriptOptions.ReferenceResolvers
-                    .Select(r => r.Resolve(cancellationToken))
+            var references = await scriptOptions.References
+                    .Select(r => _referenceResolvers[r.ReferenceType].Resolve(r.Reference, cancellationToken))
                     .WhenAll()
                     .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                 ;

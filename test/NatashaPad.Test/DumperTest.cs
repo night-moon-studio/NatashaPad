@@ -1,3 +1,6 @@
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
 namespace NatashaPad.Test;
 
 public class DumperTest

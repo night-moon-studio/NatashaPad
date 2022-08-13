@@ -1,4 +1,7 @@
-﻿using Prism.Commands;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using Prism.Commands;
 using System.Windows.Input;
 
 namespace NatashaPad.ViewModels.Base;

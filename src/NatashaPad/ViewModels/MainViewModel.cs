@@ -1,4 +1,6 @@
-﻿using NatashaPad.ReferenceResolver.Nuget;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
 using NatashaPad.ViewModels.Base;
 using Prism.Commands;
 using System.Windows.Input;
@@ -23,7 +25,7 @@ public class MainViewModel : ViewModelBase
         _scriptOptions = scriptOptions;
 
         _namespaces = _scriptOptions.UsingList;
-        _installedPackages = Array.Empty<NugetReferenceResolver>();
+        _installedPackages = Array.Empty<NuGetReference>();
 
         _input = "\"Hello NatashaPad\"";
 
@@ -74,24 +76,24 @@ public class MainViewModel : ViewModelBase
 
     private async Task RunAsync()
     {
-        string input = _input?.Trim();
+        var input = _input?.Trim();
         if (string.IsNullOrEmpty(input))
         {
             return;
         }
         Output = string.Empty;
-        if (_namespaces != null && _namespaces.Count > 0)
+        if (_namespaces is { Count: > 0 })
         {
             foreach (var ns in _namespaces)
             {
                 _scriptOptions.UsingList.Add(ns);
             }
         }
-        if (_installedPackages != null && _installedPackages.Count > 0)
+        if (_installedPackages is { Count: > 0 })
         {
-            foreach (var package in _installedPackages)
+            foreach (var packageReference in _installedPackages)
             {
-                _scriptOptions.ReferenceResolvers.Add(new NugetReferenceResolver(package.PackageName, package.PackageVersion));
+                _scriptOptions.References.Add(packageReference);
             }
         }
         try
@@ -139,7 +141,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private ICollection<NugetReferenceResolver> _installedPackages;
+    private ICollection<NuGetReference> _installedPackages;
 
     public ICommand NugetManageCommand { get; }
 
@@ -155,13 +157,13 @@ public class MainViewModel : ViewModelBase
         ICollection<InstalledPackage> GetInstalledPackages()
         {
             return _installedPackages.Select(x =>
-                    new InstalledPackage(x.PackageName, x.PackageVersion))
+                    new InstalledPackage(x.PackageId, x.PackageVersion))
                 .ToArray();
         }
 
-        ICollection<NugetReferenceResolver> GetUpdatedResolvers()
+        ICollection<NuGetReference> GetUpdatedResolvers()
         {
-            return vm.InstalledPackages.Select(x => new NugetReferenceResolver(x.Name, x.Version.ToString()))
+            return vm.InstalledPackages.Select(x => new NuGetReference(x.Name, x.Version))
                 .ToArray();
         }
     }

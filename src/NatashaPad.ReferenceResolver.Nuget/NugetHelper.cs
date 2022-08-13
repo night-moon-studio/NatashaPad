@@ -1,4 +1,6 @@
-﻿using NuGet.Protocol.Core.Types;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
 using WeihanLi.Common.Helpers;
 using WeihanLi.Extensions;
 
@@ -6,22 +8,23 @@ namespace NatashaPad.ReferenceResolver.Nuget;
 
 public static class NugetHelper
 {
+    // TODO: implement logger
     private static readonly ILogger Logger = NullLogger.Instance;
     private static readonly SourceCacheContext Cache = new();
     private static readonly SourceRepository Repository = NuGet.Protocol.Core.Types.Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
 
-    private const string DefaultTargetFramework = "net5.0";
+    private const string DefaultTargetFramework = "net6.0";
 
     private static readonly string GlobalPackagesFolder;
 
     public static string GetGlobalPackagesFolder()
     {
-        var result = CommandRunner.Capture("dotnet", "nuget locals global-packages -l");
+        var result = CommandExecutor.ExecuteAndCapture("dotnet", "nuget locals global-packages -l");
 
         var folder = string.Empty;
         if (result.StandardOut.StartsWith("global-packages:"))
         {
-            folder = result.StandardOut.Substring("global-packages:".Length).Trim();
+            folder = result.StandardOut["global-packages:".Length..].Trim();
         }
         return folder;
     }
@@ -65,10 +68,10 @@ public static class NugetHelper
             .Select(d => ResolvePackagePath(d.Key, d.Value, cancellationToken))
             .WhenAll();
         //
-        return packagePaths.Select(p => MetadataReference.CreateFromFile(p)).ToArray();
+        return packagePaths.SelectMany(_ => _).Select(p => MetadataReference.CreateFromFile(p)).ToArray();
     }
 
-    private static async Task<string> ResolvePackagePath(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
+    private static async Task<string[]> ResolvePackagePath(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
     {
         var packageDir = Path.Combine(GlobalPackagesFolder, packageId.ToLowerInvariant(),
             version.ToString());
@@ -84,18 +87,7 @@ public static class NugetHelper
         {
             var targetFrameworkString = bestDependency.TargetFramework.GetFrameworkString();
             packageDir = Path.Combine(packageDir, "lib", targetFrameworkString.ToLowerInvariant().TrimStart('.'));
-
-            var packagePath = Path.Combine(packageDir, $"{packageId}.dll");
-            if (File.Exists(packagePath))
-            {
-                return packagePath;
-            }
-
-            packagePath = Directory.GetFiles(packageDir, "*.dll", SearchOption.TopDirectoryOnly).FirstOrDefault();
-            if (null != packagePath)
-            {
-                return packagePath;
-            }
+            return Directory.GetFiles(packageDir, "*.dll", SearchOption.TopDirectoryOnly);
         }
 
         throw new InvalidOperationException($"package({packageId}:{version}) cannot be used for({DefaultTargetFramework})");
@@ -131,7 +123,7 @@ public static class NugetHelper
 
                 var childrenDependencies =
                     await GetPackageDependencies(package.Id, package.VersionRange.MinVersion);
-                if (childrenDependencies != null && childrenDependencies.Count > 0)
+                if (childrenDependencies is { Count: > 0 })
                 {
                     foreach (var childrenDependency in childrenDependencies)
                     {
@@ -176,7 +168,7 @@ public static class NugetHelper
                 pkgDownloadContext,
                 GlobalPackagesFolder,
                 Logger,
-                cancellationToken), r => true);
+                cancellationToken), _ => true);
 
         return Directory.Exists(packageDir);
     }
@@ -191,9 +183,7 @@ public static class NugetHelper
         }
 
         group = dependencyGroups
-            .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(x => x.TargetFramework.Version)
-            .FirstOrDefault();
+            .Where(x => x.TargetFramework.Framework.Equals(".netstandard", StringComparison.OrdinalIgnoreCase)).MaxBy(x => x.TargetFramework.Version);
         return group;
     }
 }

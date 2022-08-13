@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using System.Windows;
 
 namespace NatashaPad.Mvvm.Windows;
 

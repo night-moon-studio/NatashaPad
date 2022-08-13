@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using System.Diagnostics;
 
 namespace NatashaPad;
 
