@@ -1,8 +1,11 @@
-﻿namespace NatashaPad;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+namespace NatashaPad;
 
 public class NScriptOptions
 {
-    public HashSet<string> UsingList { get; } = new HashSet<string>()
+    public HashSet<string> UsingList { get; } = new()
     {
         "System",
         "System.Collections.Generic",
@@ -17,5 +20,5 @@ public class NScriptOptions
         "System.Threading.Tasks",
     };
 
-    public IList<IReferenceResolver> ReferenceResolvers { get; } = new List<IReferenceResolver>();
+    public HashSet<IReference> References { get; } = new();
 }

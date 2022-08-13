@@ -1,8 +1,10 @@
-﻿using NatashaPad.Mvvm;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using NatashaPad.Mvvm;
 using NatashaPad.ViewModels.Base;
 using Prism.Commands;
 using System.Windows.Input;
-
 using WeihanLi.Extensions;
 
 namespace NatashaPad.ViewModels;
@@ -45,9 +47,9 @@ internal class UsingManageViewModel : DialogViewModelBase
 
 internal class NamespaceItem : CollectionItem
 {
-    public NamespaceItem(string name)
+    public NamespaceItem(string @namespace)
     {
-        _namespace = name;
+        _namespace = @namespace;
     }
 
     private string _namespace;
@@ -68,6 +70,7 @@ internal class NamespaceItem : CollectionItem
 
     public override int GetHashCode()
     {
+        // ReSharper disable once NonReadonlyMemberInGetHashCode
         return _namespace.GetHashCode();
     }
 }

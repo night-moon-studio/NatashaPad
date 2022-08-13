@@ -1,29 +1,16 @@
-﻿namespace NatashaPad;
+﻿// Copyright (c) Weihan Li. All rights reserved.
+// Licensed under the Apache license.
+
+namespace NatashaPad;
 
 public class FileReferenceResolver : IReferenceResolver
 {
-    private readonly string _filePath;
+    public string ReferenceType => "file";
 
-    public FileReferenceResolver(string filePath)
+    public Task<IList<PortableExecutableReference>> Resolve(string reference, CancellationToken cancellationToken = default)
     {
-        _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
-    }
-
-    public string ReferenceType => "FileReference";
-
-    public Task<IList<PortableExecutableReference>> Resolve(CancellationToken cancellationToken = default)
-    {
-        var fileReference = MetadataReference.CreateFromFile(_filePath);
+        var filePath = reference ?? throw new ArgumentNullException(nameof(reference));
+        var fileReference = MetadataReference.CreateFromFile(filePath);
         return Task.FromResult<IList<PortableExecutableReference>>(new[] { fileReference });
-    }
-
-    public override int GetHashCode()
-    {
-        return _filePath.GetHashCode();
-    }
-
-    public override bool Equals(object obj)
-    {
-        return _filePath.Equals((obj as FileReferenceResolver)?._filePath, StringComparison.OrdinalIgnoreCase);
     }
 }

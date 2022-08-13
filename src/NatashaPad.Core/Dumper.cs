@@ -13,7 +13,7 @@ public class DefaultDumper : IDumper
 {
     public static readonly IDumper Instance = new DefaultDumper();
 
-    public Func<Type, bool> TypePredicate { get; } = t => true;
+    public Func<Type, bool> TypePredicate { get; } = _ => true;
 
     public string Dump(object obj)
     {
