@@ -1,4 +1,7 @@
-﻿using WeihanLi.Extensions;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using WeihanLi.Extensions;
 
 namespace NatashaPad;
 

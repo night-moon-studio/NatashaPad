@@ -1,4 +1,7 @@
-﻿namespace NatashaPad.Mvvm.Windows;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+namespace NatashaPad.Mvvm.Windows;
 
 public interface IWindowManager
 {

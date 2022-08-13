@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace NatashaPad.Mvvm;

@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using System.Windows.Controls;
 
 namespace NatashaPad.Views;
 

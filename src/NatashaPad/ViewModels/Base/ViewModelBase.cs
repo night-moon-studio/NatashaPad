@@ -1,4 +1,7 @@
-﻿using MediatR;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NatashaPad.Mvvm.MessageBox;
 using NatashaPad.Mvvm.Windows;

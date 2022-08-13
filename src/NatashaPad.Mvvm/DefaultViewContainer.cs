@@ -1,4 +1,7 @@
-﻿namespace NatashaPad.Mvvm;
+﻿// Copyright (c) NatashaPad. All rights reserved.
+// Licensed under the Apache license.
+
+namespace NatashaPad.Mvvm;
 
 internal class DefaultViewContainer : IViewTypeInfoLocator
 {

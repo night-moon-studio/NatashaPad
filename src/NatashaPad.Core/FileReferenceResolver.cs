@@ -1,4 +1,4 @@
-﻿// Copyright (c) Weihan Li. All rights reserved.
+﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
 namespace NatashaPad;
