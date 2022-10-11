@@ -14,7 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Nuget.Packaging" Version="6.3.0" />
-    <PackageReference Include="Nuget.Protocol" Version="6.3.0" />
+    <PackageReference Include="Nuget.Protocol" Version="6.3.1" />
     <ProjectReference Include="..\NatashaPad.Core\NatashaPad.Core.csproj" />
   </ItemGroup>
 
