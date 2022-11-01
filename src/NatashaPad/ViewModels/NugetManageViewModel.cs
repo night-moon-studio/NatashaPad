@@ -1,11 +1,12 @@
 ﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
+using Microsoft.Extensions.Logging.Abstractions;
 using NatashaPad.Mvvm;
-using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels.Base;
 using NuGet.Versioning;
 using Prism.Commands;
+using ReferenceResolver;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using WeihanLi.Extensions;
@@ -15,6 +16,7 @@ namespace NatashaPad.ViewModels;
 //TODO: 界面加载后即激活搜索框
 internal partial class NugetManageViewModel : DialogViewModelBase
 {
+    private readonly INuGetHelper _nugetHelper = new NuGetHelper(NullLoggerFactory.Instance);
     public NugetManageViewModel(CommonParam commonParam,
         IEnumerable<InstalledPackage> installedPackages) : base(commonParam)
     {
@@ -30,7 +32,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
     {
         if (InstalledPackages.Count > 0)
         {
-            await InstalledPackages.Select(p => NugetHelper.EnsurePackageInstalled(p.Name, NuGetVersion.Parse(p.Version)))
+            await InstalledPackages.Select(p => _nugetHelper.DownloadPackage(p.Name, NuGetVersion.Parse(p.Version)))
                     .WhenAll()
                     .ConfigureAwait(false)
                 ;
@@ -59,12 +61,12 @@ internal partial class NugetManageViewModel : DialogViewModelBase
         text = text.Trim();
 
         //TODO: 这边都给了默认值。需要在界面上支持用户选择
-        var packagesNames = await NugetHelper.GetPackages(text, true, default);
+        var packagesNames = await _nugetHelper.GetPackages(text, true, default);
 
         SearchedPackages.Clear();
         foreach (var name in packagesNames)
         {
-            var versions = await NugetHelper.GetPackageVersions(name, default);
+            var versions = await _nugetHelper.GetPackageVersions(name, default);
             var pkg = new SearchedPackage(name,
                 versions.Select(x => x.ToString()).ToArray());
             pkg.InstallCommand = new DelegateCommand(

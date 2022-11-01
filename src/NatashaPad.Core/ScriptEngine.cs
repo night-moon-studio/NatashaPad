@@ -1,9 +1,11 @@
-﻿// Copyright (c) NatashaPad. All rights reserved.
+﻿using System.Runtime.Versioning;
+// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Natasha.Framework;
+using ReferenceResolver;
 using System.Reflection;
 using WeihanLi.Common.Helpers;
 using WeihanLi.Extensions;
@@ -34,10 +36,10 @@ public class CSharpScriptEngine : INScriptEngine
         }
     }
 
-    private readonly Dictionary<string, IReferenceResolver> _referenceResolvers;
-    public CSharpScriptEngine(IEnumerable<IReferenceResolver> referenceResolvers)
+    private readonly IReferenceResolverFactory _referenceResolverFactory;
+    public CSharpScriptEngine(IReferenceResolverFactory referenceResolverFactory)
     {
-        _referenceResolvers = referenceResolvers.ToDictionary(x => x.ReferenceType, x => x, StringComparer.OrdinalIgnoreCase);
+        _referenceResolverFactory = referenceResolverFactory;
     }
 
     public async Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
@@ -55,15 +57,15 @@ public class CSharpScriptEngine : INScriptEngine
         if (scriptOptions.References.Count > 0)
         {
             var references = await scriptOptions.References
-                .Select(r => _referenceResolvers[r.ReferenceType].Resolve(r.Reference, cancellationToken))
+                .Select(r => _referenceResolverFactory.ResolveReference(r.Reference, scriptOptions.TargetFramework, cancellationToken))
                 .WhenAll()
                 .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray(), cancellationToken);
             // add reference
             foreach (var reference in references)
             {
-                if (!string.IsNullOrEmpty(reference?.FilePath))
+                if (!string.IsNullOrEmpty(reference))
                 {
-                    domain.LoadAssemblyFromStream(reference.FilePath);
+                    domain.LoadAssemblyFromStream(reference);
                 }
             }
         }
@@ -81,7 +83,8 @@ public class CSharpScriptEngine : INScriptEngine
             ;
         if (null != entryPoint)
         {
-            entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
+            var returnValue = entryPoint.Invoke(null, entryPoint.GetParameters().Select(p => p.ParameterType.GetDefaultValue()).ToArray());
+            await TaskHelper.ToTask(returnValue);
         }
         else
         {
@@ -99,38 +102,25 @@ public class CSharpScriptEngine : INScriptEngine
 
     public async Task<object> Eval(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
     {
-        var originalReferences = new[]
-        {
-            typeof(object).Assembly,
-            typeof(Enumerable).Assembly,
-            typeof(IDumper).Assembly,
-            Assembly.Load("netstandard"),
-            Assembly.Load("System.Runtime"),
-        };
-        // https://github.com/dotnet/roslyn/issues/34111
         var defaultReferences =
-            originalReferences
-                .SelectMany(ass => ass.GetReferencedAssemblies())
-                .Distinct()
-                .Select(Assembly.Load)
-                .Union(originalReferences)
-                .Select(assembly => assembly.Location)
-                .Distinct()
-                .Select(l => MetadataReference.CreateFromFile(l))
-                .Cast<MetadataReference>()
-                .ToArray();
-
+            await _referenceResolverFactory.GetResolver(ReferenceType.FrameworkReference)
+                .ResolveMetadata(FrameworkReferenceResolver.FrameworkNames.Default, scriptOptions.TargetFramework, cancellationToken)
+                .ContinueWith(r => r.Result.ToArray());
         scriptOptions.UsingList.Add("NatashaPad");
         var options = ScriptOptions.Default
                 .WithLanguageVersion(Microsoft.CodeAnalysis.CSharp.LanguageVersion.Latest)
                 .AddReferences(defaultReferences)
+                .AddReferences(new[]
+                {
+                    MetadataReference.CreateFromFile(typeof(DumperResolver).Assembly.Location)
+                })
                 .WithImports(scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)))
             ;
 
         if (scriptOptions.References.Count > 0)
         {
             var references = await scriptOptions.References
-                    .Select(r => _referenceResolvers[r.ReferenceType].Resolve(r.Reference, cancellationToken))
+                    .Select(r => _referenceResolverFactory.ResolveMetadataReference(r.Reference, scriptOptions.TargetFramework, cancellationToken))
                     .WhenAll()
                     .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                 ;

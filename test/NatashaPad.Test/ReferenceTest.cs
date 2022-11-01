@@ -8,14 +8,14 @@ public class ReferenceTest
     public void FileReferenceTypeTest()
     {
         IReference fileReference = new FileReference("NatashaPad.dll");
-        Assert.Equal("file", fileReference.ReferenceType);
+        Assert.Equal(ReferenceResolver.ReferenceType.LocalFile, fileReference.ReferenceType);
     }
 
     [Fact]
     public void NuGetReferenceTypeTest()
     {
         IReference fileReference = new NuGetReference("NatashaPad.Core", "1.0.0");
-        Assert.Equal("nuget", fileReference.ReferenceType);
+        Assert.Equal(ReferenceResolver.ReferenceType.NuGetPackage, fileReference.ReferenceType);
     }
 
     [Fact]
@@ -25,7 +25,6 @@ public class ReferenceTest
         var reference2 = new FileReference("NatashaPad.dll");
         Assert.Equal(reference1, reference2);
     }
-
 
     [Fact]
     public void NuGetReferenceEqualsTest()
