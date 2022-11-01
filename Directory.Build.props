@@ -3,10 +3,8 @@
     <VersionMajor>0</VersionMajor>
     <VersionMinor>1</VersionMinor>
     <VersionPatch>0</VersionPatch>
-    <VersionRevision>0</VersionRevision>
-    <VersionPrefix Condition="'$(VersionRevision)'=='0'">$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
-    <VersionPrefix Condition="'$(VersionRevision)'!='0'">$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionRevision)</VersionPrefix>
-    <VersionSuffix Condition="'$(Configuration)'=='DEBUG'">preview</VersionSuffix>
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)'=='DEBUG'">develop</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
@@ -15,8 +13,5 @@
   <ItemGroup>
     <Using Include="Microsoft.CodeAnalysis" />
     <Using Include="NatashaPad" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/> -->
   </ItemGroup>
 </Project>
