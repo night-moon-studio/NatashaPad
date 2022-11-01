@@ -15,7 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NatashaPad.Core\NatashaPad.Core.csproj" />
     <ProjectReference Include="..\NatashaPad.Mvvm\NatashaPad.Mvvm.csproj" />
-    <ProjectReference Include="..\NatashaPad.ReferenceResolver.Nuget\NatashaPad.ReferenceResolver.Nuget.csproj" />
+<!--    <ProjectReference Include="..\NatashaPad.ReferenceResolver.Nuget\NatashaPad.ReferenceResolver.Nuget.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>

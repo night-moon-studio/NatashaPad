@@ -22,6 +22,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\NatashaPad.Core\NatashaPad.Core.csproj" />
-    <ProjectReference Include="..\..\src\NatashaPad.ReferenceResolver.Nuget\NatashaPad.ReferenceResolver.Nuget.csproj" />
   </ItemGroup>
 </Project>

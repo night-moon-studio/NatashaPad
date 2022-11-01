@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NatashaPad.Mvvm;
 using NatashaPad.Mvvm.Windows;
-using NatashaPad.ReferenceResolver.Nuget;
 using NatashaPad.ViewModels;
 using NatashaPad.Views;
+using ReferenceResolver;
 using System.Windows;
 using System.Windows.Threading;
 using WeihanLi.Common;
@@ -40,6 +40,7 @@ public partial class App : Application
         services.AddMediatR(typeof(App));
 
         services.AddSingleton(Dispatcher.CurrentDispatcher);
+        services.AddReferenceResolvers();
 
         services.UsingViewLocator(options =>
         {
