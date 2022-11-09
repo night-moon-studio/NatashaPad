@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslyncPackageVersion)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslyncPackageVersion)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslyncPackageVersion)" />
-    <PackageReference Include="ReferenceResolver" Version="0.9.0-preview-*" />
+    <PackageReference Include="ReferenceResolver" Version="0.9.0" />
   </ItemGroup>
 
 

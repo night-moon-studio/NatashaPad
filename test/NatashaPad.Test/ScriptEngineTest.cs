@@ -1,6 +1,7 @@
 ﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
+using NuGet.Versioning;
 using ReferenceResolver;
 using WeihanLi.Common;
 using WeihanLi.Extensions;
@@ -46,7 +47,7 @@ public class ScriptEngineTest
         try
         {
             var options = new NScriptOptions();
-            options.References.Add(new NuGetReference("WeihanLi.Npoi", "2.4.2"));
+            options.References.Add(new NuGetReference("WeihanLi.Npoi", NuGetVersion.Parse("2.4.2")));
             await _scriptEngine.Execute("(1+1).Dump();", options);
         }
         catch (Natasha.Error.NatashaException ex)
@@ -82,7 +83,7 @@ public class ScriptEngineTest
     public async Task EvalTestWithReference()
     {
         var options = new NScriptOptions();
-        options.References.Add(new NuGetReference("WeihanLi.Npoi", "2.4.2"));
+        options.References.Add(new NuGetReference("WeihanLi.Npoi", NuGetVersion.Parse("2.4.2")));
         var result = await _scriptEngine.Eval("1 + 1", options);
         Assert.Equal(2, result);
     }

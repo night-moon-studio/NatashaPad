@@ -3,6 +3,7 @@
 
 using NatashaPad.ViewModels.Base;
 using Prism.Commands;
+using ReferenceResolver;
 using System.Windows.Input;
 using System.Windows.Threading;
 using static NatashaPad.ViewModels.NugetManageViewModel;
@@ -157,13 +158,13 @@ public class MainViewModel : ViewModelBase
         ICollection<InstalledPackage> GetInstalledPackages()
         {
             return _installedPackages.Select(x =>
-                    new InstalledPackage(x.PackageId, x.PackageVersion))
+                    new InstalledPackage(x.PackageId, x.PackageVersion.ToString()))
                 .ToArray();
         }
 
         ICollection<NuGetReference> GetUpdatedResolvers()
         {
-            return vm.InstalledPackages.Select(x => new NuGetReference(x.Name, x.Version))
+            return vm.InstalledPackages.Select(x => new NuGetReference(x.Name, NuGet.Versioning.NuGetVersion.Parse(x.Version)))
                 .ToArray();
         }
     }
