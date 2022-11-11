@@ -157,14 +157,19 @@ public class MainViewModel : ViewModelBase
 
         ICollection<InstalledPackage> GetInstalledPackages()
         {
-            return _installedPackages.Select(x =>
-                    new InstalledPackage(x.PackageId, x.PackageVersion.ToString()))
-                .ToArray();
+            var packages = new InstalledPackage[_installedPackages.Count];
+            var idx = 0;
+            foreach(var package in _installedPackages)
+            {
+                var (packageId, packageVersion, _) = package;
+                packages[idx] = new InstalledPackage(packageId, packageVersion); 
+            }
+            return packages;
         }
 
         ICollection<NuGetReference> GetUpdatedResolvers()
         {
-            return vm.InstalledPackages.Select(x => new NuGetReference(x.Name, NuGet.Versioning.NuGetVersion.Parse(x.Version)))
+            return vm.InstalledPackages.Select(x => new NuGetReference(x.Name, x.Version))
                 .ToArray();
         }
     }

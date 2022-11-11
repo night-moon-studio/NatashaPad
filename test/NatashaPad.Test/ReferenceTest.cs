@@ -17,7 +17,7 @@ public class ReferenceTest
     [Fact]
     public void NuGetReferenceTypeTest()
     {
-        IReference fileReference = new NuGetReference("NatashaPad.Core", NuGetVersion.Parse("1.0.0"));
+        IReference fileReference = new NuGetReference("NatashaPad.Core", "1.0.0");
         Assert.Equal(ReferenceResolver.ReferenceType.NuGetPackage, fileReference.ReferenceType);
     }
 
@@ -32,8 +32,8 @@ public class ReferenceTest
     [Fact]
     public void NuGetReferenceEqualsTest()
     {
-        var reference1 = new NuGetReference("NatashaPad.Core", NuGetVersion.Parse("1.0.0"));
-        var reference2 = new NuGetReference("NatashaPad.Core", NuGetVersion.Parse("1.0.0"));
+        var reference1 = new NuGetReference("NatashaPad.Core", "1.0.0");
+        var reference2 = new NuGetReference("NatashaPad.Core", "1.0.0");
         Assert.Equal(reference1, reference2);
     }
 }
