@@ -37,7 +37,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox Text="{Binding Namespace,UpdateSourceTrigger=PropertyChanged}"
-                                         Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                                         Style="{StaticResource MaterialDesignFilledTextBox}"
                                          materialDesign:HintAssist.Hint="输入命名空间"
                                          Grid.Column="0" />
                                 <Button Style="{StaticResource MaterialDesignRaisedLightButton}"

@@ -71,7 +71,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                    <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              materialDesign:HintAssist.Hint="搜索"
                              Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
