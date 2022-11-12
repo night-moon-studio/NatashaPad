@@ -122,7 +122,8 @@ public class CSharpScriptEngine : INScriptEngine
         if (scriptOptions.References.Count > 0)
         {
             var references = await scriptOptions.References
-                    .Select(r => _referenceResolverFactory.ResolveMetadataReference(r.Reference, scriptOptions.TargetFramework, cancellationToken))
+                    .Select(r => _referenceResolverFactory.GetResolver(r.ReferenceType)
+                        .ResolveMetadata(r.Reference, scriptOptions.TargetFramework, cancellationToken))
                     .WhenAll()
                     .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                 ;
