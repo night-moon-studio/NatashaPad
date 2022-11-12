@@ -47,7 +47,8 @@ public class ScriptEngineTest
         {
             var options = new NScriptOptions();
             options.References.Add(new NuGetReference("WeihanLi.Npoi", "2.4.2"));
-            await _scriptEngine.Execute("(1+1).Dump();", options);
+            options.UsingList.Add("WeihanLi.Npoi");
+            await _scriptEngine.Execute("CsvHelper.GetCsvText(new[]{1,2,3}).Dump();", options);
         }
         catch (Natasha.Error.NatashaException ex)
         {
@@ -83,7 +84,8 @@ public class ScriptEngineTest
     {
         var options = new NScriptOptions();
         options.References.Add(new NuGetReference("WeihanLi.Npoi", "2.4.2"));
-        var result = await _scriptEngine.Eval("1 + 1", options);
-        Assert.Equal(2, result);
+        options.UsingList.Add("WeihanLi.Npoi");
+        var result = await _scriptEngine.Eval("CsvHelper.GetCsvText(Enumerable.Range(1, 3))", options);
+        Assert.NotNull(result);
     }
 }

@@ -54,7 +54,7 @@
                 <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <TextBox AcceptsReturn="True"
-                     Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                     Style="{StaticResource MaterialDesignFilledTextBox}"
                      materialDesign:HintAssist.Hint="输入源代码"
                      VerticalContentAlignment="Top"
                      Text="{Binding Input,UpdateSourceTrigger=PropertyChanged}"
@@ -68,7 +68,7 @@
                     Margin="0 10 0 0"
                     Width="80" />
             <TextBox Grid.Row="2"
-                     Style="{StaticResource MaterialDesignFilledTextFieldTextBox}"
+                     Style="{StaticResource MaterialDesignFilledTextBox}"
                      materialDesign:HintAssist.Hint="计算结果"
                      Text="{Binding Output,UpdateSourceTrigger=PropertyChanged}"
                      AcceptsReturn="True"
