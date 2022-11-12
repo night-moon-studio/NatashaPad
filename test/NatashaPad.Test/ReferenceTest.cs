@@ -1,7 +1,6 @@
 ﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
-using NuGet.Versioning;
 using ReferenceResolver;
 
 namespace NatashaPad.Test;
