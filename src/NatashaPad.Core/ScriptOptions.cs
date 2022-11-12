@@ -22,7 +22,7 @@ public class NScriptOptions
         "System.Threading.Tasks",
     };
 
-    public string TargetFramework { get; set; } = "net6.0";
+    public string TargetFramework { get; set; } = "net7.0";
 
     public HashSet<IReference> References { get; } = new();
 }
