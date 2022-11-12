@@ -1,6 +1,8 @@
 ﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
+using ReferenceResolver;
+
 namespace NatashaPad.Test;
 public class ReferenceTest
 {
