@@ -4,7 +4,6 @@
 
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Natasha.Framework;
 using ReferenceResolver;
 using System.Reflection;
 using WeihanLi.Common.Helpers;
@@ -27,8 +26,7 @@ public class CSharpScriptEngine : INScriptEngine
     {
         try
         {
-            NatashaInitializer.Initialize()
-                .ConfigureAwait(false).GetAwaiter().GetResult();
+            NatashaInitializer.Preheating();
         }
         catch (Exception ex)
         {
@@ -48,10 +46,14 @@ public class CSharpScriptEngine : INScriptEngine
 
         code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
 
-        using var domain = DomainManagement.Random;
+        using var domain = DomainManagement.Random();
         var assBuilder = new AssemblyCSharpBuilder();
-
-        assBuilder.Add(code, scriptOptions.UsingList);
+        assBuilder.Add(code);
+        assBuilder.Domain = domain;
+        assBuilder.ConfigCompilerOption(options =>
+        {
+            options.SetOutputKind(OutputKind.ConsoleApplication);
+        });
 
         // add reference
         if (scriptOptions.References.Count > 0)
@@ -61,21 +63,17 @@ public class CSharpScriptEngine : INScriptEngine
                         .Resolve(r.Reference, scriptOptions.TargetFramework, cancellationToken)
                 )
                 .WhenAll()
-                .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray(), cancellationToken);
+                .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken);
             // add reference
             foreach (var reference in references)
             {
                 if (!string.IsNullOrEmpty(reference))
                 {
-                    domain.LoadAssemblyFromStream(reference);
+                    domain.LoadAssemblyFromFile(reference);
                 }
             }
         }
-
-        assBuilder.Compiler.AssemblyKind = OutputKind.ConsoleApplication;
-        assBuilder.Compiler.Domain = domain;
-        assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.Stream;
-
+        
         var assembly = assBuilder.GetAssembly();
 
         using var capture = await ConsoleOutput.CaptureAsync();

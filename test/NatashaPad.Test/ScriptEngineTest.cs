@@ -28,7 +28,7 @@ public class ScriptEngineTest
 
             await _scriptEngine.Execute("Console.WriteLine(\"Hello NatashaPad\");", new NScriptOptions());
         }
-        catch (Natasha.Error.NatashaException ex)
+        catch (NatashaException ex)
         {
             _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
             throw;
@@ -50,7 +50,7 @@ public class ScriptEngineTest
             options.UsingList.Add("WeihanLi.Npoi");
             await _scriptEngine.Execute("CsvHelper.GetCsvText(new[]{1,2,3}).Dump();", options);
         }
-        catch (Natasha.Error.NatashaException ex)
+        catch (NatashaException ex)
         {
             _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
             throw;

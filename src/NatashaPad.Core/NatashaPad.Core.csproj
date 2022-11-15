@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetCore.Natasha.CSharp.All" Version="3.6.0" />
+    <PackageReference Include="DotNetCore.Natasha.CSharp" Version="5.0.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslyncPackageVersion)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslyncPackageVersion)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslyncPackageVersion)" />
