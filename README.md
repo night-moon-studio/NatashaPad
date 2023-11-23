@@ -2,7 +2,7 @@
 
 ## Intro
 
-![Build Status](https://github.com/WeihanLi/NatashaPad/workflows/dotnetcore/badge.svg)
+[![dotnetcore](https://github.com/night-moon-studio/NatashaPad/actions/workflows/dotnetcore.yml/badge.svg)](https://github.com/night-moon-studio/NatashaPad/actions/workflows/dotnetcore.yml)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnight-moon-studio%2FNatashaPad.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnight-moon-studio%2FNatashaPad?ref=badge_shield)
 
 Another dotnet debug tool like LinqPad and dotnet fiddle, powered by Roslyn and Natasha
