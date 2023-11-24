@@ -1,4 +1,4 @@
-name: dotnetcore
+name: dotnet-ci
 
 # Trigger the workflow on push or pull request
 on: [push, pull_request]
@@ -13,7 +13,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
         # include-prerelease: true # required for preview versions
     - name: dotnet info
       run: dotnet --info
