@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-// Copyright (c) NatashaPad. All rights reserved.
+﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -27,8 +26,6 @@ public class CSharpScriptEngine : INScriptEngine
         try
         {
             NatashaInitializer.Preheating();
-            NatashaManagement.AddGlobalReference(typeof(object));
-            NatashaManagement.AddGlobalReference(typeof(DefaultDumper));
         }
         catch (Exception ex)
         {
@@ -45,7 +42,8 @@ public class CSharpScriptEngine : INScriptEngine
     public async Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
     {
         scriptOptions.UsingList.Add("NatashaPad");
-        code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
+        code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};")
+            .StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
 
         using var domain = NatashaManagement.CreateRandomDomain();
         var assBuilder = new AssemblyCSharpBuilder();
@@ -65,8 +63,9 @@ public class CSharpScriptEngine : INScriptEngine
             {                
                 domain.LoadAssemblyFromFile(reference);
             }
-            catch (System.Exception)
+            catch
             {
+                // ignore
             }
         }
         // add reference
@@ -84,7 +83,14 @@ public class CSharpScriptEngine : INScriptEngine
             {
                 if (!string.IsNullOrEmpty(reference))
                 {
-                    domain.LoadAssemblyFromFile(reference);
+                    try
+                    {                
+                        domain.LoadAssemblyFromFile(reference);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
             }
         }

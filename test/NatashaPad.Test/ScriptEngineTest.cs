@@ -1,21 +1,25 @@
 ﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
+using Microsoft.Extensions.DependencyInjection;
 using ReferenceResolver;
-using WeihanLi.Common;
 using WeihanLi.Extensions;
 
 namespace NatashaPad.Test;
 
-public class ScriptEngineTest
+public class ScriptEngineTest : IDisposable
 {
     private readonly ITestOutputHelper _testOutputHelper;
     private readonly INScriptEngine _scriptEngine;
+    private readonly ServiceProvider _serviceProvider;
 
     public ScriptEngineTest(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
-        _scriptEngine = new CSharpScriptEngine(new ReferenceResolverFactory(DependencyResolver.Current));
+        _serviceProvider = new ServiceCollection()
+            .AddReferenceResolvers()
+            .BuildServiceProvider();
+        _scriptEngine = new CSharpScriptEngine(new ReferenceResolverFactory(_serviceProvider));
     }
 
     [Fact]
@@ -30,7 +34,8 @@ public class ScriptEngineTest
         }
         catch (NatashaException ex)
         {
-            _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString()).StringJoin(Environment.NewLine));
+            _testOutputHelper.WriteLine(ex.Diagnostics.Select(d => d.ToString())
+                .StringJoin(Environment.NewLine));
             throw;
         }
         finally
@@ -61,11 +66,6 @@ public class ScriptEngineTest
         }
     }
 
-    private void Output(string msg)
-    {
-        _testOutputHelper.WriteLine(msg);
-    }
-
     [Fact]
     public async Task EvalTest()
     {
@@ -88,4 +88,15 @@ public class ScriptEngineTest
         var result = await _scriptEngine.Eval("CsvHelper.GetCsvText(Enumerable.Range(1, 3))", options);
         Assert.NotNull(result);
     }
+
+    public void Dispose()
+    {
+        _serviceProvider.Dispose();
+    }
+    
+    private void Output(string msg)
+    {
+        _testOutputHelper.WriteLine(msg);
+    }
+
 }
