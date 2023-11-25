@@ -10,8 +10,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  <ItemGroup>
-    <Using Include="Microsoft.CodeAnalysis" />
+  <ItemGroup>    
     <Using Include="NatashaPad" />
   </ItemGroup>
 </Project>

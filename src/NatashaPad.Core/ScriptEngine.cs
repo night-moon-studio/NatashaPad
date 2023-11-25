@@ -1,10 +1,8 @@
-﻿using System.Runtime.Versioning;
-// Copyright (c) NatashaPad. All rights reserved.
+﻿// Copyright (c) NatashaPad. All rights reserved.
 // Licensed under the Apache license.
 
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Natasha.Framework;
 using ReferenceResolver;
 using System.Reflection;
 using WeihanLi.Common.Helpers;
@@ -27,8 +25,7 @@ public class CSharpScriptEngine : INScriptEngine
     {
         try
         {
-            NatashaInitializer.Initialize()
-                .ConfigureAwait(false).GetAwaiter().GetResult();
+            NatashaInitializer.Preheating();
         }
         catch (Exception ex)
         {
@@ -45,37 +42,59 @@ public class CSharpScriptEngine : INScriptEngine
     public async Task Execute(string code, NScriptOptions scriptOptions, CancellationToken cancellationToken = default)
     {
         scriptOptions.UsingList.Add("NatashaPad");
+        code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};")
+            .StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
 
-        code = $"{scriptOptions.UsingList.Where(x => !string.IsNullOrWhiteSpace(x)).Select(ns => $"using {ns};").StringJoin(Environment.NewLine)}{Environment.NewLine}{code}";
-
-        using var domain = DomainManagement.Random;
+        using var domain = NatashaManagement.CreateRandomDomain();
         var assBuilder = new AssemblyCSharpBuilder();
+        assBuilder.Add(code);
+        assBuilder.Domain = domain;
+        assBuilder.ConfigCompilerOption(options =>
+        {
+            options.SetOutputKind(OutputKind.ConsoleApplication);
+        });
 
-        assBuilder.Add(code, scriptOptions.UsingList);
-
+        var defaultReferences =
+            await _referenceResolverFactory.GetResolver(ReferenceType.FrameworkReference)
+                .Resolve(FrameworkReferenceResolver.FrameworkNames.Default, scriptOptions.TargetFramework, cancellationToken);
+        foreach (var reference in defaultReferences)
+        {
+            try
+            {                
+                domain.LoadAssemblyFromFile(reference);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
         // add reference
         if (scriptOptions.References.Count > 0)
         {
-            var references = await scriptOptions.References
+            var references = await scriptOptions
+                .References
                 .Select(r => _referenceResolverFactory.GetResolver(r.ReferenceType)
                         .Resolve(r.Reference, scriptOptions.TargetFramework, cancellationToken)
                 )
                 .WhenAll()
-                .ContinueWith(r => r.Result.SelectMany(_ => _).ToArray(), cancellationToken);
+                .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken);
             // add reference
-            foreach (var reference in references)
+            foreach (var reference in references.Distinct())
             {
                 if (!string.IsNullOrEmpty(reference))
                 {
-                    domain.LoadAssemblyFromStream(reference);
+                    try
+                    {                
+                        domain.LoadAssemblyFromFile(reference);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
             }
         }
-
-        assBuilder.Compiler.AssemblyKind = OutputKind.ConsoleApplication;
-        assBuilder.Compiler.Domain = domain;
-        assBuilder.Compiler.AssemblyOutputKind = AssemblyBuildKind.Stream;
-
+        
         var assembly = assBuilder.GetAssembly();
 
         using var capture = await ConsoleOutput.CaptureAsync();
@@ -106,7 +125,7 @@ public class CSharpScriptEngine : INScriptEngine
     {
         var defaultReferences =
             await _referenceResolverFactory.GetResolver(ReferenceType.FrameworkReference)
-                .ResolveMetadata(FrameworkReferenceResolver.FrameworkNames.Default, scriptOptions.TargetFramework, cancellationToken)
+                .ResolveMetadataReferences(FrameworkReferenceResolver.FrameworkNames.Default, scriptOptions.TargetFramework, cancellationToken)
                 .ContinueWith(r => r.Result.ToArray());
         scriptOptions.UsingList.Add("NatashaPad");
         var options = ScriptOptions.Default
@@ -123,7 +142,7 @@ public class CSharpScriptEngine : INScriptEngine
         {
             var references = await scriptOptions.References
                     .Select(r => _referenceResolverFactory.GetResolver(r.ReferenceType)
-                        .ResolveMetadata(r.Reference, scriptOptions.TargetFramework, cancellationToken))
+                        .ResolveMetadataReferences(r.Reference, scriptOptions.TargetFramework, cancellationToken))
                     .WhenAll()
                     .ContinueWith(r => r.Result.SelectMany(_ => _), cancellationToken)
                 ;
