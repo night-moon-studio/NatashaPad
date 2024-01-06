@@ -61,12 +61,12 @@ internal partial class NugetManageViewModel : DialogViewModelBase
         text = text.Trim();
 
         //TODO: 这边都给了默认值。需要在界面上支持用户选择
-        var packagesNames = await _nugetHelper.GetPackages(text, true, default).ToArrayAsync().ConfigureAwait(false);
+        var packagesNames = await _nugetHelper.GetPackages(text, true, default).ToArrayAsync();
 
         SearchedPackages.Clear();
         foreach (var name in packagesNames)
         {
-            var versions = await _nugetHelper.GetPackageVersions(name, default).ToArrayAsync().ConfigureAwait(false);
+            var versions = await _nugetHelper.GetPackageVersions(name, default).ToArrayAsync();
             // TODO: we may want to show the source where the version comes from
             var pkg = new SearchedPackage(name,
                 versions.Select(x => x.Version.ToString()).ToArray());
