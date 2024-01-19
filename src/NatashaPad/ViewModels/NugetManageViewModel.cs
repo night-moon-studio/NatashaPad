@@ -4,7 +4,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using NatashaPad.Mvvm;
 using NatashaPad.ViewModels.Base;
-using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using Prism.Commands;
 using ReferenceResolver;
@@ -28,7 +27,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
 
         SearchedPackages = new ObservableCollection<SearchedPackage>();
 
-        Sources = _nugetHelper.GetSources().Select(x=> x.Name.GetValueOrDefault(x.Source)).ToArray();
+        Sources = _nugetHelper.GetSources().Select(x => x.Name.GetValueOrDefault(x.Source)).ToArray();
         SearchCommand = new DelegateCommand(async () => await SearchAsync());
     }
 
@@ -48,7 +47,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
     public ObservableCollection<SearchedPackage> SearchedPackages { get; }
 
     private string _searchText;
-    private bool _includePrerelease;
+    private bool _includePrerelease = true;
     private string _selectedSource;
 
     public string[] Sources { get; }
@@ -83,7 +82,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
         var packagesNames = (
                 await _nugetHelper.SearchPackages(text, _includePrerelease, source: _selectedSource).ToArrayAsync()
                 )
-            .SelectMany(x=> x.SearchResult.Select(r=> r.Identity.Id))
+            .SelectMany(x => x.SearchResult.Select(r=> r.Identity.Id))
             .Distinct()
             ;
 
