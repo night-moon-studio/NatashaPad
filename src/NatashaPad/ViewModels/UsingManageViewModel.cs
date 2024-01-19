@@ -10,7 +10,7 @@ using WeihanLi.Extensions;
 namespace NatashaPad.ViewModels;
 
 //TODO: 添加时，1. 获取光标；2. 滚动到空处；3. 空处红框显示；
-internal class UsingManageViewModel : DialogViewModelBase
+internal sealed class UsingManageViewModel : DialogViewModelBase
 {
     public UsingManageViewModel(CommonParam commonParam,
         IEnumerable<string> namespaces) : base(commonParam)
@@ -45,7 +45,7 @@ internal class UsingManageViewModel : DialogViewModelBase
     }
 }
 
-internal class NamespaceItem : CollectionItem
+internal sealed class NamespaceItem : CollectionItem
 {
     public NamespaceItem(string @namespace)
     {

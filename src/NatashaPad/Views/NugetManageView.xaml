@@ -64,9 +64,18 @@
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Grid>
+                <StackPanel Margin="10 0 0 10" Orientation="Horizontal">
+                    <!-- 这里放置一个 source 选项和显示 prerelease 版本的选项
+                    <TextBlock>Source</TextBlock>
+                    <ComboBox Name="CbSource" Padding="3 0">
+                        <ComboBoxItem IsSelected="True">All</ComboBoxItem>
+                    </ComboBox>
+                    -->
+                </StackPanel>
+                <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
@@ -89,7 +98,7 @@
                                                  Foreground="White" />
                     </Button>
                 </Grid>
-                <ScrollViewer Grid.Row="1"
+                <ScrollViewer Grid.Row="2"
                               Margin="0 10 0 0"
                               Padding="0 0 15 0"
                               VerticalScrollBarVisibility="Visible">
