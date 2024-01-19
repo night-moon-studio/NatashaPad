@@ -4,6 +4,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using NatashaPad.Mvvm;
 using NatashaPad.ViewModels.Base;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using Prism.Commands;
 using ReferenceResolver;
@@ -16,7 +17,9 @@ namespace NatashaPad.ViewModels;
 //TODO: 界面加载后即激活搜索框
 internal partial class NugetManageViewModel : DialogViewModelBase
 {
+    // TODO: get it via dependency injection
     private readonly INuGetHelper _nugetHelper = new NuGetHelper(NullLoggerFactory.Instance);
+    
     public NugetManageViewModel(CommonParam commonParam,
         IEnumerable<InstalledPackage> installedPackages) : base(commonParam)
     {
@@ -25,6 +28,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
 
         SearchedPackages = new ObservableCollection<SearchedPackage>();
 
+        Sources = _nugetHelper.GetSources().Select(x=> x.Name.GetValueOrDefault(x.Source)).ToArray();
         SearchCommand = new DelegateCommand(async () => await SearchAsync());
     }
 
@@ -44,6 +48,22 @@ internal partial class NugetManageViewModel : DialogViewModelBase
     public ObservableCollection<SearchedPackage> SearchedPackages { get; }
 
     private string _searchText;
+    private bool _includePrerelease;
+    private string _selectedSource;
+
+    public string[] Sources { get; }
+    
+    public string SelectedSource
+    {
+        get => _selectedSource;
+        set => SetProperty(ref _selectedSource, value);
+    }
+
+    public bool IncludePrerelease
+    {
+        get => _includePrerelease;
+        set => SetProperty(ref _includePrerelease, value);
+    }
 
     public string SearchText
     {
@@ -55,18 +75,24 @@ internal partial class NugetManageViewModel : DialogViewModelBase
 
     private async Task SearchAsync()
     {
-        var text = _searchText;
-        if (string.IsNullOrWhiteSpace(text))
+        var text = _searchText?.Trim();
+        if (string.IsNullOrEmpty(text))
             return;
-        text = text.Trim();
 
         //TODO: 这边都给了默认值。需要在界面上支持用户选择
-        var packagesNames = await _nugetHelper.GetPackages(text, true, default).ToArrayAsync();
+        var packagesNames = (
+                await _nugetHelper.SearchPackages(text, _includePrerelease, source: _selectedSource).ToArrayAsync()
+                )
+            .SelectMany(x=> x.SearchResult.Select(r=> r.Identity.Id))
+            .Distinct()
+            ;
 
         SearchedPackages.Clear();
         foreach (var name in packagesNames)
         {
-            var versions = await _nugetHelper.GetPackageVersions(name, default).ToArrayAsync();
+            var versions = await _nugetHelper.GetPackageVersions(
+                    name, _includePrerelease, null, _selectedSource
+                    ).ToArrayAsync();
             // TODO: we may want to show the source where the version comes from
             var pkg = new SearchedPackage(name,
                 versions.Select(x => x.Version.ToString()).ToArray());
