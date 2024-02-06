@@ -48,14 +48,14 @@ internal partial class NugetManageViewModel : DialogViewModelBase
 
     private string _searchText;
     private bool _includePrerelease = true;
-    private string _selectedSource;
+    private string[] _selectedSources = [];
 
     public string[] Sources { get; }
     
-    public string SelectedSource
+    public string[] SelectedSources
     {
-        get => _selectedSource;
-        set => SetProperty(ref _selectedSource, value);
+        get => _selectedSources;
+        set => SetProperty(ref _selectedSources, value);
     }
 
     public bool IncludePrerelease
@@ -80,7 +80,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
 
         //TODO: 这边都给了默认值。需要在界面上支持用户选择
         var packagesNames = (
-                await _nugetHelper.SearchPackages(text, _includePrerelease, source: _selectedSource).ToArrayAsync()
+                await _nugetHelper.SearchPackages(text, _includePrerelease, sources: _selectedSources).ToArrayAsync()
                 )
             .SelectMany(x => x.SearchResult.Select(r=> r.Identity.Id))
             .Distinct()
@@ -90,7 +90,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
         foreach (var name in packagesNames)
         {
             var versions = await _nugetHelper.GetPackageVersions(
-                    name, _includePrerelease, null, _selectedSource
+                    name, _includePrerelease, null, _selectedSources
                     ).ToArrayAsync();
             // TODO: we may want to show the source where the version comes from
             var pkg = new SearchedPackage(name,

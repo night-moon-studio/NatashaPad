@@ -3,17 +3,17 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>NatashaPad</RootNamespace>
-    <RoslyncPackageVersion>4.9.0-2.final</RoslyncPackageVersion>
+    <RoslynPackageVersion>4.9.0-3.final</RoslynPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Using Include="Microsoft.CodeAnalysis" />
     <PackageReference Include="DotNetCore.Compile.Environment" Version="3.2.0" />
     <PackageReference Include="DotNetCore.Natasha.CSharp" Version="5.2.2.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslyncPackageVersion)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslyncPackageVersion)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslyncPackageVersion)" />
-    <PackageReference Include="ReferenceResolver" Version="0.17.0-preview-20240117-161410" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynPackageVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynPackageVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynPackageVersion)" />
+    <PackageReference Include="ReferenceResolver" Version="0.17.0" />
   </ItemGroup>
 
 </Project>
