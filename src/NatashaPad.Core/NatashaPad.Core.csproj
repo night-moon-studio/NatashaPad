@@ -1,19 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>NatashaPad</RootNamespace>
-    <RoslynPackageVersion>4.9.2</RoslynPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Using Include="Microsoft.CodeAnalysis" />
-    <PackageReference Include="DotNetCore.Compile.Environment" Version="3.2.0" />
-    <PackageReference Include="DotNetCore.Natasha.CSharp" Version="5.2.2.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynPackageVersion)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynPackageVersion)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynPackageVersion)" />
-    <PackageReference Include="ReferenceResolver" Version="0.18.1" />
+    <PackageReference Include="DotNetCore.Compile.Environment" />
+    <PackageReference Include="DotNetCore.Natasha.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+    <PackageReference Include="ReferenceResolver" />
   </ItemGroup>
 
 </Project>
