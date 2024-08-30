@@ -90,7 +90,7 @@ internal partial class NugetManageViewModel : DialogViewModelBase
         foreach (var name in packagesNames)
         {
             var versions = await _nugetHelper.GetPackageVersions(
-                    name, _includePrerelease, null, _selectedSources
+                    name, _includePrerelease, false, null, _selectedSources
                     ).ToArrayAsync();
             // TODO: we may want to show the source where the version comes from
             var pkg = new SearchedPackage(name,
