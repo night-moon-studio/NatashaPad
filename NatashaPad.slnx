@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/misc/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+    <File Path="Roadmap.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/NatashaPad.Core/NatashaPad.Core.csproj" />
+    <Project Path="src/NatashaPad.Mvvm/NatashaPad.Mvvm.csproj" />
+    <Project Path="src/NatashaPad/NatashaPad.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/NatashaPad.Test/NatashaPad.Test.csproj" />
+  </Folder>
+</Solution>
