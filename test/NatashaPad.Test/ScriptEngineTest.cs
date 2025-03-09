@@ -28,9 +28,9 @@ public class ScriptEngineTest : IDisposable
         DumpOutHelper.OutputAction += Output;
         try
         {
-            await _scriptEngine.Execute("\"Hello NatashaPad\".Dump();", new NScriptOptions());
+            await _scriptEngine.Execute("\"Hello NatashaPad\".Dump();", new NScriptOptions(), TestContext.Current.CancellationToken);
 
-            await _scriptEngine.Execute("Console.WriteLine(\"Hello NatashaPad\");", new NScriptOptions());
+            await _scriptEngine.Execute("Console.WriteLine(\"Hello NatashaPad\");", new NScriptOptions(), TestContext.Current.CancellationToken);
         }
         catch (NatashaException ex)
         {
@@ -53,7 +53,7 @@ public class ScriptEngineTest : IDisposable
             var options = new NScriptOptions();
             options.References.Add(new NuGetReference("WeihanLi.Npoi", "2.4.2"));
             options.UsingList.Add("WeihanLi.Npoi");
-            await _scriptEngine.Execute("CsvHelper.GetCsvText(new[]{1,2,3}).Dump();", options);
+            await _scriptEngine.Execute("CsvHelper.GetCsvText(new[]{1,2,3}).Dump();", options, TestContext.Current.CancellationToken);
         }
         catch (NatashaException ex)
         {
@@ -69,13 +69,13 @@ public class ScriptEngineTest : IDisposable
     [Fact]
     public async Task EvalTest()
     {
-        var result = await _scriptEngine.Eval("1+1", new NScriptOptions());
+        var result = await _scriptEngine.Eval("1+1", new NScriptOptions(), TestContext.Current.CancellationToken);
         Assert.Equal(2, result);
 
-        result = await _scriptEngine.Eval("\"Hello \" + \"NatashaPad\"", new NScriptOptions());
+        result = await _scriptEngine.Eval("\"Hello \" + \"NatashaPad\"", new NScriptOptions(), TestContext.Current.CancellationToken);
         Assert.Equal("Hello NatashaPad", result);
 
-        result = await _scriptEngine.Eval("DateTime.Today.ToString(\"yyyyMMdd\")", new NScriptOptions());
+        result = await _scriptEngine.Eval("DateTime.Today.ToString(\"yyyyMMdd\")", new NScriptOptions(), TestContext.Current.CancellationToken);
         Assert.Equal(DateTime.Today.ToString("yyyyMMdd"), result);
     }
 
@@ -85,7 +85,7 @@ public class ScriptEngineTest : IDisposable
         var options = new NScriptOptions();
         options.References.Add(new NuGetReference("WeihanLi.Npoi", "2.4.2"));
         options.UsingList.Add("WeihanLi.Npoi");
-        var result = await _scriptEngine.Eval("CsvHelper.GetCsvText(Enumerable.Range(1, 3))", options);
+        var result = await _scriptEngine.Eval("CsvHelper.GetCsvText(Enumerable.Range(1, 3))", options, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
     }
 
